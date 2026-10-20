@@ -109,7 +109,7 @@ Hysteresis: enter In tune at |cents| ≤ 5 and leave it at |cents| > 8, so the s
 - Full-viewport single screen (`100dvh`). On viewports wider than 480 px, content is a centred 390 px-wide column on the same background (the band spans the full window width).
 - Bottom row: 24 px side padding and `max(56px, env(safe-area-inset-bottom) + 24px)` bottom padding.
 - The iOS status bar in the artboards is device chrome. Don't render it.
-- Home-screen launch: `viewport-fit=cover`, `apple-mobile-web-app-capable=yes`, `apple-mobile-web-app-status-bar-style=default`, `apple-touch-icon`, `theme-color`, and a minimal `manifest.webmanifest` (`name` and `short_name` "Vire") with `display: standalone` (no service worker; offline mode is out of scope).
+- Home-screen launch: `viewport-fit=cover`, `apple-mobile-web-app-capable=yes`, `apple-mobile-web-app-status-bar-style=black-translucent` (the app draws under the status bar so the in-tune green fills the whole screen; iOS 26 only samples its own bar colour at launch, and in a Safari tab the bars stay at the load-time colour), `apple-touch-icon`, `theme-color`, and a minimal `manifest.webmanifest` (`name` and `short_name` "Vire") with `display: standalone` (no service worker; offline mode is out of scope).
 - Inter is self-hosted via `@fontsource-variable/inter` (no third-party font requests).
 
 ## Tech Stack

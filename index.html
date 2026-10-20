@@ -14,7 +14,11 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Vire" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!--
+      Home-screen app draws under the status bar, so the in-tune green fills the whole screen
+      (iOS 26 only samples its own bar colour at launch). Trade-off: iOS shows the clock in white.
+    -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <!-- Kept in sync with the screen background by the app (mint when in tune). -->
     <meta name="theme-color" content="#F5F6F5" />
 
