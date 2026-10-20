@@ -5,6 +5,10 @@ const COPY = {
     title: 'Tap to start',
     body: 'Vire listens through your microphone. Audio never leaves your device.',
   },
+  resume: {
+    title: 'Tap to continue',
+    body: 'Your browser paused the microphone. Tap once more to keep tuning.',
+  },
   denied: {
     title: 'Microphone unavailable',
     body: 'Allow microphone access for this site in your browser settings, then tap to try again.',
@@ -15,7 +19,7 @@ export function StartPrompt({
   reason,
   onStart,
 }: {
-  reason: 'start' | 'denied'
+  reason: keyof typeof COPY
   onStart: () => void
 }) {
   const { title, body } = COPY[reason]

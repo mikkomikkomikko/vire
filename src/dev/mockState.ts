@@ -6,7 +6,7 @@ const E2 = standardTuning('guitar').strings[0]
 
 /**
  * Dev-only fixed states for checking visuals against the Paper artboards:
- * `?mock=sharp|flat|intune|idle|start|denied`, optionally with `&cents=30`.
+ * `?mock=sharp|flat|intune|idle|start|resume|denied`, optionally with `&cents=30`.
  */
 export function mockState(search: string): TunerState | null {
   const params = new URLSearchParams(search)
@@ -32,6 +32,8 @@ export function mockState(search: string): TunerState | null {
       return { status: 'idle', lastString: E2 }
     case 'start':
       return { status: 'start' }
+    case 'resume':
+      return { status: 'start', resume: true }
     case 'denied':
       return { status: 'denied' }
     default:

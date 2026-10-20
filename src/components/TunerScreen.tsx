@@ -31,9 +31,10 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
       <div className={styles.centre}>
         {active && (active.inTune ? <InTuneMark /> : <CentsDisplay cents={active.cents} />)}
       </div>
-      {(state.status === 'start' || state.status === 'denied') && (
-        <StartPrompt reason={state.status} onStart={onStart} />
+      {state.status === 'start' && (
+        <StartPrompt reason={state.resume ? 'resume' : 'start'} onStart={onStart} />
       )}
+      {state.status === 'denied' && <StartPrompt reason="denied" onStart={onStart} />}
       <BottomBar
         note={note}
         freq={active?.freq ?? null}

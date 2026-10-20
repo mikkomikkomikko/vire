@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { openMic } from './audio/input'
+import { diagnostics } from './audio/diagnostics'
+import { DebugOverlay } from './components/DebugOverlay'
 import { SettingsSheet } from './components/SettingsSheet'
 import { TunerScreen } from './components/TunerScreen'
 import { mockState } from './dev/mockState'
@@ -38,6 +40,7 @@ export function App() {
         onChange={updateSettings}
         onClose={() => setSettingsOpen(false)}
       />
+      {diagnostics.enabled && <DebugOverlay />}
       {tone > 0 && <div className="dev-badge">Test tone {tone} Hz · not the mic</div>}
     </>
   )
