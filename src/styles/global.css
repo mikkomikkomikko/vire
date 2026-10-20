@@ -19,3 +19,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
   font-synthesis: none;
 }
+
+/* Dev-only marker so a `?tone=` session is never mistaken for the real mic. */
+.dev-badge {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  left: 50%;
+  translate: -50% 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-black);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  white-space: nowrap;
+  pointer-events: none;
+}

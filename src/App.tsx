@@ -20,12 +20,15 @@ export function App() {
   )
 
   return (
-    <TunerScreen
-      state={mock ?? state}
-      locked={settings.lockedString}
-      label={tuningLabel(settings)}
-      onStart={() => void start()}
-      onOpenSettings={() => {}}
-    />
+    <>
+      <TunerScreen
+        state={mock ?? state}
+        locked={settings.lockedString}
+        label={tuningLabel(settings)}
+        onStart={() => void start()}
+        onOpenSettings={() => {}}
+      />
+      {tone > 0 && <div className="dev-badge">Test tone {tone} Hz · not the mic</div>}
+    </>
   )
 }
