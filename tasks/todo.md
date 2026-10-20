@@ -52,7 +52,7 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 
 ## 4. Wire audio
 
-- [ ] Task: `audio/mic.ts` (start on gesture, no browser processing, suspend/resume on visibility, stop) + `state/useTuner.ts` (rAF loop → TunerState) + `StartPrompt` and permission-denied state
+- [x] Task: `audio/mic.ts` (built as `audio/input.ts`; dev `?tone=<Hz>` stand-in in `dev/tone.ts`) (start on gesture, no browser processing, suspend/resume on visibility, stop) + `state/useTuner.ts` (rAF loop → TunerState) + `StartPrompt` and permission-denied state
   - Acceptance: tap starts mic; denial shows retry message; hidden tab suspends
   - Verify: unit tests for useTuner with a fake detector; manual tuning via desktop mic
   - Files: src/audio/mic.ts, src/state/useTuner.ts, src/components/StartPrompt.tsx, App.tsx

@@ -1,0 +1,40 @@
+.prompt {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 48px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.prompt:focus-visible {
+  outline: none;
+}
+
+.prompt:focus-visible .title {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
+
+.title {
+  color: var(--color-ink);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: -0.01em;
+}
+
+.body {
+  max-width: 280px;
+  color: var(--color-ink-muted);
+  font-size: 16px;
+  line-height: 22px;
+}

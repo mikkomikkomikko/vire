@@ -2,16 +2,18 @@ import type { TunerState } from '../state/tunerState'
 import { BottomBar } from './BottomBar'
 import { CentsDisplay } from './CentsDisplay'
 import { InTuneMark } from './InTuneMark'
+import { StartPrompt } from './StartPrompt'
 import styles from './TunerScreen.module.css'
 
 type Props = {
   state: TunerState
   locked: string | null
   label: string
+  onStart: () => void
   onOpenSettings: () => void
 }
 
-export function TunerScreen({ state, locked, label, onOpenSettings }: Props) {
+export function TunerScreen({ state, locked, label, onStart, onOpenSettings }: Props) {
   const active = state.status === 'active' ? state : null
   const lastString = state.status === 'idle' ? state.lastString : null
   // A locked string is always the target, so show it even before anything is played.
@@ -22,6 +24,9 @@ export function TunerScreen({ state, locked, label, onOpenSettings }: Props) {
       <div className={styles.centre}>
         {active && (active.inTune ? <InTuneMark /> : <CentsDisplay cents={active.cents} />)}
       </div>
+      {(state.status === 'start' || state.status === 'denied') && (
+        <StartPrompt reason={state.status} onStart={onStart} />
+      )}
       <BottomBar
         note={note}
         freq={active?.freq ?? null}

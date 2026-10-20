@@ -19,11 +19,18 @@ function renderScreen(
   state: TunerState,
   { locked = null as string | null, label = 'Standard' } = {},
 ) {
+  const onStart = vi.fn()
   const onOpenSettings = vi.fn()
   const view = render(
-    <TunerScreen state={state} locked={locked} label={label} onOpenSettings={onOpenSettings} />,
+    <TunerScreen
+      state={state}
+      locked={locked}
+      label={label}
+      onStart={onStart}
+      onOpenSettings={onOpenSettings}
+    />,
   )
-  return { ...view, onOpenSettings }
+  return { ...view, onStart, onOpenSettings }
 }
 
 describe('formatCents', () => {
@@ -96,5 +103,24 @@ describe('TunerScreen', () => {
 
   test('the mock E2 frequency matches the design', () => {
     expect(noteToFreq('E2') * 2 ** (12 / 1200)).toBeCloseTo(82.98, 1)
+  })
+
+  test('start: tapping the prompt starts the tuner', async () => {
+    const { onStart } = renderScreen({ status: 'start' })
+    await userEvent.click(screen.getByRole('button', { name: /tap to start/i }))
+    expect(onStart).toHaveBeenCalledOnce()
+  })
+
+  test('denied: explains and retries on tap', async () => {
+    const { onStart } = renderScreen({ status: 'denied' })
+    await userEvent.click(screen.getByRole('button', { name: /microphone unavailable/i }))
+    expect(onStart).toHaveBeenCalledOnce()
+  })
+
+  test('the settings button stays usable on the start screen', async () => {
+    const { onStart, onOpenSettings } = renderScreen({ status: 'start' })
+    await userEvent.click(screen.getByRole('button', { name: 'Settings: Standard' }))
+    expect(onOpenSettings).toHaveBeenCalledOnce()
+    expect(onStart).not.toHaveBeenCalled()
   })
 })
