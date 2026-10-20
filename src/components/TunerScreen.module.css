@@ -12,6 +12,8 @@
 
 .inTune {
   background: var(--color-bg-in-tune);
+  /* With difference blending this gives black digits on mint (white would turn maroon). */
+  --cents-ink: var(--color-bg-in-tune);
 }
 
 .centre {

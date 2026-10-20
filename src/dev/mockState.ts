@@ -27,7 +27,7 @@ export function mockState(search: string): TunerState | null {
     case 'flat':
       return active(centsParam ? Number(centsParam) : -6, false)
     case 'intune':
-      return active(0, true)
+      return active(centsParam ? Number(centsParam) : 0, true)
     case 'idle':
       return { status: 'idle', lastString: E2 }
     case 'start':

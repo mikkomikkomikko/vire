@@ -30,7 +30,7 @@
   translate: -50% -50%;
   display: flex;
   justify-content: center;
-  color: #ffffff;
+  color: var(--cents-ink, #ffffff);
   mix-blend-mode: difference;
   font-size: min(169px, 44vw);
   font-weight: 700;

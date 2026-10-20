@@ -73,10 +73,18 @@ describe('TunerScreen', () => {
   })
 
   test('in tune: check mark on the mint background, no band or number', () => {
-    const { container } = renderScreen(active(2, true))
+    const { container } = renderScreen(active(0.3, true))
     expect(screen.getByRole('img', { name: 'In tune' })).toBeInTheDocument()
     expect(screen.queryByTestId('band')).toBeNull()
     expect(container.querySelector('main')).toHaveClass('inTune')
+  })
+
+  test('in tune but not dead on: the number stays on the green so you can find 0', () => {
+    const { container } = renderScreen(active(-1.2, true))
+    expect(container.querySelector('main')).toHaveClass('inTune')
+    expect(screen.getByLabelText('-1 cents flat')).toHaveTextContent('-1')
+    expect(screen.getByTestId('band')).toHaveClass('flat')
+    expect(screen.queryByRole('img', { name: 'In tune' })).toBeNull()
   })
 
   test('idle: last string and its target, dimmed', () => {
