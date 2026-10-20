@@ -92,7 +92,7 @@ String lists are in physical order (ukulele G4 first even though it is higher th
 | **Flat**                       | cents < −5                           | Matches `04 - flat`.                                                                                                 |
 | **In tune**                    | \|cents\| ≤ 5                        | Matches `04 - in tune`.                                                                                              |
 
-Hysteresis: enter In tune at |cents| ≤ 5 and leave it at |cents| > 8, so the screen doesn't flash at the boundary.
+Hysteresis: enter In tune at |cents| ≤ 5 and leave it at |cents| > 8, so the screen doesn't flash at the boundary. Both are judged on the rounded (displayed) cents, so the state always agrees with the number on screen.
 
 ### F8. Cents visual (from the Paper design)
 
