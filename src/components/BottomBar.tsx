@@ -2,6 +2,7 @@ import styles from './BottomBar.module.css'
 
 type Props = {
   note: string | null
+  /** Target frequency for the note. */
   freq: number | null
   locked: boolean
   tuning: string

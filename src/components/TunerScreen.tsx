@@ -1,3 +1,5 @@
+import { soundingFreq } from '../music/target'
+import type { TuningString } from '../music/tunings'
 import type { TunerState } from '../state/tunerState'
 import { BottomBar } from './BottomBar'
 import { CentsDisplay } from './CentsDisplay'
@@ -12,7 +14,7 @@ const BG_IN_TUNE = '#CFECDE'
 
 type Props = {
   state: TunerState
-  locked: string | null
+  locked: TuningString | null
   tuning: string
   capo: number
   onStart: () => void
@@ -23,7 +25,9 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
   const active = state.status === 'active' ? state : null
   const lastString = state.status === 'idle' ? state.lastString : null
   // A locked string is always the target, so show it even before anything is played.
-  const note = active?.string.name ?? locked ?? lastString?.name ?? null
+  const target = active?.string ?? locked ?? lastString
+  // The pitch to tune to (capo included); the measured pitch is already shown as cents.
+  const targetFreq = target ? soundingFreq(target, capo) : null
   useThemeColor(active?.inTune ? BG_IN_TUNE : BG)
 
   return (
@@ -36,8 +40,8 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
       )}
       {state.status === 'denied' && <StartPrompt reason="denied" onStart={onStart} />}
       <BottomBar
-        note={note}
-        freq={active?.freq ?? null}
+        note={target?.name ?? null}
+        freq={targetFreq}
         locked={locked !== null}
         tuning={tuning}
         capo={capo}

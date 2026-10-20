@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { noteToFreq } from '../music/notes'
-import { standardTuning } from '../music/tunings'
+import { standardTuning, type TuningString } from '../music/tunings'
 import type { TunerState } from '../state/tunerState'
 import { formatCents } from './formatCents'
 import { TunerScreen } from './TunerScreen'
@@ -17,7 +17,7 @@ const active = (cents: number, inTune = false): TunerState => ({
 
 function renderScreen(
   state: TunerState,
-  { locked = null as string | null, tuning = 'Standard', capo = 0 } = {},
+  { locked = null as TuningString | null, tuning = 'Standard', capo = 0 } = {},
 ) {
   const onStart = vi.fn()
   const onOpenSettings = vi.fn()
@@ -55,7 +55,8 @@ describe('TunerScreen', () => {
     expect(band).toHaveClass('sharp')
     expect(band.style.getPropertyValue('--band-cents')).toBe('12')
     expect(screen.getByText('E2')).toBeInTheDocument()
-    expect(screen.getByText('82.98 Hz')).toBeInTheDocument()
+    // The target pitch, not the measured 82.98 Hz: the cents already say how far off you are.
+    expect(screen.getByText('82.41 Hz')).toBeInTheDocument()
     expect(container.querySelector('main')).not.toHaveClass('inTune')
   })
 
@@ -78,16 +79,29 @@ describe('TunerScreen', () => {
     expect(container.querySelector('main')).toHaveClass('inTune')
   })
 
-  test('idle: last string, dimmed, no frequency', () => {
+  test('idle: last string and its target, dimmed', () => {
     renderScreen({ status: 'idle', lastString: E2 })
     expect(screen.getByText('E2')).toBeInTheDocument()
-    expect(screen.getByText('— Hz')).toBeInTheDocument()
+    expect(screen.getByText('82.41 Hz')).toBeInTheDocument()
     expect(screen.queryByTestId('band')).toBeNull()
   })
 
+  test('nothing played yet: no note, no frequency', () => {
+    renderScreen({ status: 'idle', lastString: null })
+    expect(screen.getByText('— Hz')).toBeInTheDocument()
+  })
+
+  test('with a capo the target is the capoed pitch', () => {
+    renderScreen(active(0, true), { capo: 2 })
+    expect(screen.getByText('E2')).toBeInTheDocument()
+    expect(screen.getByText('92.50 Hz')).toBeInTheDocument()
+  })
+
   test('locked: lock glyph, and the locked string shows even before playing', () => {
-    renderScreen({ status: 'idle', lastString: null }, { locked: 'D3' })
+    const D3 = standardTuning('guitar').strings[2]
+    renderScreen({ status: 'idle', lastString: null }, { locked: D3 })
     expect(screen.getByText('D3')).toBeInTheDocument()
+    expect(screen.getByText('146.83 Hz')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Locked' })).toBeInTheDocument()
   })
 

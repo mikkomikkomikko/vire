@@ -28,7 +28,7 @@ export function App() {
     <>
       <TunerScreen
         state={mock ?? state}
-        locked={settings.lockedString}
+        locked={lockedTuningString(settings)}
         tuning={tuningName(settings)}
         capo={settings.capo}
         onStart={() => void start()}

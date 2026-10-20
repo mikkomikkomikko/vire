@@ -78,7 +78,7 @@ String lists are in physical order (ukulele G4 first even though it is higher th
 ### F6. Main screen labels (bottom row)
 
 - **Left:** the open-string name of the current target (e.g. `E2`) in 36/44 Inter Bold `#0E1A15`. When locked, a small lock glyph follows it. With a capo it still shows the open-string name, never the transposed note.
-- **Next to it:** the detected frequency, 2 decimals (`82.98 Hz`), 16/20 Inter Regular `#4F5E57`. Shows `— Hz` while Idle.
+- **Next to it:** the **target** frequency of that string, 2 decimals (`82.41 Hz`; with capo 2, `92.50 Hz`), 16/20 Inter Regular `#4F5E57`. The measured pitch is already expressed by the cents. Shows `— Hz` when there is no target yet. (Changed after device testing: the design's `82.98 Hz` was the measured value, which gave no hint of what to tune to.)
 - **Right:** the tuning label: the tuning name (`Standard`, `Drop D`), `Ukulele` for the standard ukulele tuning and `Ukulele <name>` for the others (`Ukulele Low G`), with `Capo N` on a second, smaller line (14/18) when capo > 0, so a long tuning name never hides it. Same type as the frequency; each line stays on one line.
 
 ### F7. Screen states
