@@ -10,6 +10,9 @@ export const diagnostics = {
   track: '-',
   frames: 0,
   rms: 0,
+  /** Loudest level over the last couple of seconds, so a screenshot shows how loud plucks are. */
+  peak: 0,
+  peakAt: 0,
   freq: 0,
   error: '',
 }

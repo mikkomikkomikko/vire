@@ -19,6 +19,7 @@ export function DebugOverlay() {
     ['mic track', d.track],
     ['frames', String(d.frames)],
     ['level', `${d.rms.toFixed(4)} (gate ${NOISE_GATE_RMS})`],
+    ['peak 2s', d.peak.toFixed(4)],
     ['pitch', d.freq ? `${d.freq.toFixed(2)} Hz` : '-'],
   ]
   if (d.error) rows.push(['error', d.error])

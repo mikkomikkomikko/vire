@@ -42,7 +42,19 @@ test('silence is rejected', () => {
 })
 
 test('quiet signals below the noise gate are rejected', () => {
-  expect(detect(sine(110, 4096, 0.005), SAMPLE_RATE)).toBeNull()
+  expect(detect(sine(110, 4096, 0.002), SAMPLE_RATE)).toBeNull()
+})
+
+test('a quiet but clear pluck, as a distant built-in mic hears it, is detected', () => {
+  // RMS ≈ 0.004: well under the old 0.01 gate that made Safari on a Mac miss notes.
+  const freq = noteToFreq('E2')
+  const reading = detect(mix(sawtooth(freq, 4096, 0.006), noise(4096, 0.0006)), SAMPLE_RATE)
+  expect(reading).not.toBeNull()
+  expect(Math.abs(centsBetween(reading!.freq, freq))).toBeLessThan(1)
+})
+
+test('room noise at the measured floor is rejected', () => {
+  expect(detect(noise(4096, 0.01), SAMPLE_RATE)).toBeNull()
 })
 
 test('white noise is rejected', () => {

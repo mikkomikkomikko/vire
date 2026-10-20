@@ -30,7 +30,7 @@ Primary user: the author, on an iPhone, launched fullscreen from a home-screen b
 ### F2. Pitch detection
 
 - McLeod Pitch Method via the `pitchy` library (MIT).
-- Reject a frame if RMS < noise gate (start at 0.01, tune on device) or clarity < 0.90.
+- Reject a frame if RMS < noise gate (0.002 ≈ −54 dBFS, measured on a Mac's built-in mic in Safari with auto gain off; a quiet room reads ~0.0006) or clarity < 0.90. Clarity is the main noise guard.
 - Smooth with the median of the last 5 accepted estimates. If no estimate is accepted for 1.5 s, return to Idle (F7).
 - Reference pitch is A4 = 440 Hz (fixed in v1).
 

@@ -35,6 +35,10 @@ export function useTuner(config: TargetConfig, openInput: () => Promise<AudioInp
       if (diagnostics.enabled) {
         diagnostics.frames++
         diagnostics.rms = rms(buffer)
+        if (diagnostics.rms >= diagnostics.peak || now - diagnostics.peakAt > 2000) {
+          diagnostics.peak = diagnostics.rms
+          diagnostics.peakAt = now
+        }
         diagnostics.freq = next.status === 'active' ? next.freq : 0
       }
       setState((prev) => (sameScreen(prev, next) ? prev : next))

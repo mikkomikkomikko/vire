@@ -1,7 +1,10 @@
 import { PitchDetector } from 'pitchy'
 
 export const BUFFER_SIZE = 4096
-export const NOISE_GATE_RMS = 0.01
+// About -54 dBFS. Set from Safari on a Mac's built-in mic with auto gain off: a quiet room sits
+// near 0.0006, so this keeps a ~3x margin while letting plucked notes ring out. The clarity check
+// below is what really rejects noise.
+export const NOISE_GATE_RMS = 0.002
 export const MIN_CLARITY = 0.9
 // Comfortably outside every tuning (C2 = 65 Hz … B4 + 7 fret capo ≈ 740 Hz).
 const MIN_FREQ = 40
