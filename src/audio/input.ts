@@ -45,6 +45,11 @@ export function analyserInput(
   analyser.fftSize = BUFFER_SIZE
   analyser.smoothingTimeConstant = 0
   source.connect(analyser)
+  // WebKit (Safari, every iOS browser) only renders nodes that lead to the speakers; an analyser
+  // left dangling reads silence. Route it through a muted gain so it runs without making sound.
+  const sink = context.createGain()
+  sink.gain.value = 0
+  analyser.connect(sink).connect(context.destination)
 
   let pausedByUs = false
   const isRunning = () => context.state === 'running'
@@ -66,6 +71,7 @@ export function analyserInput(
     stop: () => {
       context.onstatechange = null
       source.disconnect()
+      sink.disconnect()
       cleanup()
       void context.close()
     },
