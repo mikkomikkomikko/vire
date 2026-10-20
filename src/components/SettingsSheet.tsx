@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { INSTRUMENTS, tuningsFor, type Instrument } from '../music/tunings'
 import {
   currentTuning,
@@ -25,6 +25,7 @@ const noteLetters = (names: string[]) => names.map((n) => n.replace(/-?\d+$/, ''
 
 export function SettingsSheet({ open, settings, onChange, onClose }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const [scrolled, setScrolled] = useState(false)
   const tuning = currentTuning(settings)
 
   useEffect(() => {
@@ -45,16 +46,19 @@ export function SettingsSheet({ open, settings, onChange, onClose }: Props) {
         if (event.target === event.currentTarget) onClose()
       }}
     >
-      <div className={styles.content}>
-        <div className={styles.grabber} aria-hidden />
-        <header className={styles.header}>
-          <h2 id="settings-title" className={styles.title}>
-            Settings
-          </h2>
-          <button type="button" className={styles.done} onClick={onClose}>
-            Done
-          </button>
-        </header>
+      <div className={styles.content} onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 0)}>
+        {/* Sticky, so Done is always within reach however far the options scroll. */}
+        <div className={`${styles.top} ${scrolled ? styles.scrolled : ''}`}>
+          <div className={styles.grabber} aria-hidden />
+          <header className={styles.header}>
+            <h2 id="settings-title" className={styles.title}>
+              Settings
+            </h2>
+            <button type="button" className={styles.done} onClick={onClose}>
+              Done
+            </button>
+          </header>
+        </div>
 
         <fieldset className={styles.section}>
           <legend className={styles.legend}>Instrument</legend>
