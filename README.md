@@ -9,7 +9,7 @@ A minimal guitar and ukulele tuner for the browser. Pluck a string and Vire show
 - Capo support: keep tuning to the string names you know
 - Runs entirely in the browser — audio never leaves your device
 
-Works best saved to your phone's home screen.
+**Try it: https://vire-tuner.vercel.app** — works best saved to your phone's home screen.
 
 ## Development
 

@@ -78,6 +78,7 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 ## 7. Ship (needs your go-ahead)
 
 - [ ] Task: Connect the GitHub repo to a Vercel project named `vire-tuner`; verify the production URL on iPhone
+  - Done 2026-10-20: project `vire-tuner` live at https://vire-tuner.vercel.app, auto-deploys from `main`. iPhone verification pending (Checkpoint D).
   - Acceptance: SPEC Success Criteria 1–8
   - Verify: production URL on iPhone + desktop browsers
   - Files: none (repo/hosting setup)
