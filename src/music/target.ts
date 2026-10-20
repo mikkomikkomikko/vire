@@ -3,8 +3,10 @@ import type { Tuning, TuningString } from './tunings'
 
 export const AUTO_RANGE_CENTS = 500
 export const LOCKED_RANGE_CENTS = 900
-export const IN_TUNE_ENTER_CENTS = 5
-export const IN_TUNE_EXIT_CENTS = 8
+// ±2 is about what a good clip-on tuner shows as in tune; ±5 (the first choice) hid every
+// reading under 6 cents in device testing. The wider exit keeps a ringing string from flickering.
+export const IN_TUNE_ENTER_CENTS = 2
+export const IN_TUNE_EXIT_CENTS = 4
 export const AUTO_SWITCH_MS = 150
 
 export type Target = { string: TuningString; cents: number }

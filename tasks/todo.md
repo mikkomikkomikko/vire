@@ -26,7 +26,7 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
   - Acceptance: every string's Hz matches reference ±0.01; ukulele Standard is G4 C4 E4 A4
   - Verify: `npm test tunings`
   - Files: src/music/tunings.ts, tunings.test.ts
-- [x] Task: `music/target.ts`: `soundingFreq` (capo), `resolveTarget` auto/locked with range limits, stateful auto-switch hysteresis (150 ms), in-tune hysteresis (≤5 enter, >8 exit)
+- [x] Task: `music/target.ts`: `soundingFreq` (capo), `resolveTarget` auto/locked with range limits, stateful auto-switch hysteresis (150 ms), in-tune hysteresis (≤2 enter, >4 exit; was ≤5/>8)
   - Acceptance: capo 2 E2 → 92.50 Hz; G3/B3 no flicker; locked rejects >±900 cents; auto rejects >500 cents outside range
   - Verify: `npm test target`
   - Files: src/music/target.ts, target.test.ts

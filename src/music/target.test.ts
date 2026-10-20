@@ -112,16 +112,17 @@ describe('createTargetTracker', () => {
     expect(tracker.update(B3, 10, auto(standard))?.cents).toBeCloseTo(400, 6)
   })
 
-  test('in-tune hysteresis on displayed (rounded) cents: enter at ≤5, stay until >8', () => {
+  test('in-tune hysteresis on displayed (rounded) cents: enter at ≤2, stay until >4', () => {
     const tracker = createTargetTracker()
     const at = (cents: number, t: number) => tracker.update(centsOff(G3, cents), t, auto(standard))
-    expect(at(5.6, 0)?.inTune).toBe(false)
-    expect(at(5.4, 10)?.inTune).toBe(true)
-    expect(at(8.4, 20)?.inTune).toBe(true)
-    expect(at(-8.4, 30)?.inTune).toBe(true)
-    expect(at(8.6, 40)?.inTune).toBe(false)
-    expect(at(7, 50)?.inTune).toBe(false)
-    expect(at(-5, 60)?.inTune).toBe(true)
+    expect(at(3, 0)?.inTune).toBe(false)
+    expect(at(2.6, 5)?.inTune).toBe(false)
+    expect(at(2.4, 10)?.inTune).toBe(true)
+    expect(at(4.4, 20)?.inTune).toBe(true)
+    expect(at(-4.4, 30)?.inTune).toBe(true)
+    expect(at(4.6, 40)?.inTune).toBe(false)
+    expect(at(3, 50)?.inTune).toBe(false)
+    expect(at(-2, 60)?.inTune).toBe(true)
   })
 
   test('changing tuning, capo or lock resets the held target', () => {

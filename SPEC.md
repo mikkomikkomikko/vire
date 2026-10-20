@@ -88,11 +88,11 @@ String lists are in physical order (ukulele G4 first even though it is higher th
 | **Start**                      | First load, or audio not yet running | Bottom row visible; centre shows a "Tap to start" prompt. Tapping anywhere outside the settings button starts audio. |
 | **Permission denied / no mic** | `getUserMedia` rejects               | Centre message explaining how to enable the mic; tap to retry.                                                       |
 | **Idle**                       | Running, no accepted pitch for 1.5 s | Neutral background `#F5F6F5`, no band, centre empty. Bottom row shows the last target, dimmed.                       |
-| **Sharp**                      | cents > +5                           | Matches `04 - sharp`.                                                                                                |
-| **Flat**                       | cents < −5                           | Matches `04 - flat`.                                                                                                 |
-| **In tune**                    | \|cents\| ≤ 5                        | Matches `04 - in tune`.                                                                                              |
+| **Sharp**                      | cents > +2                           | Matches `04 - sharp`.                                                                                                |
+| **Flat**                       | cents < −2                           | Matches `04 - flat`.                                                                                                 |
+| **In tune**                    | \|cents\| ≤ 2                        | Matches `04 - in tune`.                                                                                              |
 
-Hysteresis: enter In tune at |cents| ≤ 5 and leave it at |cents| > 8, so the screen doesn't flash at the boundary. Both are judged on the rounded (displayed) cents, so the state always agrees with the number on screen.
+Hysteresis: enter In tune at |cents| ≤ 2 and leave it at |cents| > 4, so the screen doesn't flash at the boundary. Both are judged on the rounded (displayed) cents, so the state always agrees with the number on screen.
 
 ### F8. Cents visual (from the Paper design)
 
@@ -213,14 +213,14 @@ export function resolveTarget(
 3. On an iPhone (Safari, launched from the home screen): fullscreen with no browser chrome, one tap starts the mic, and a guitar tuned with the app agrees with a reference clip-on tuner within ±2 cents per string.
 4. Sharp/flat/in-tune screens visually match the three Paper artboards at 390×844 (colours, type sizes, band geometry).
 5. The settings sheet opens from the tuning label, and every F5 rule (resets, persistence across reload) holds.
-6. Capo 2 + Standard: plucking a correctly tuned (capo'd) low E shows `E2`, ±5 cents, the in-tune screen, and ~92.50 Hz.
+6. Capo 2 + Standard: plucking a correctly tuned (capo'd) low E shows `E2`, ±2 cents, the in-tune screen, and ~92.50 Hz.
 7. Locked to E2: talking near the phone does not change the target or show stray values outside ±900 cents.
 8. Works in current Chrome, Safari and Firefox on desktop as a centred column.
 
 ## Decisions (approved 2026-10-20)
 
 1. **Undesigned states** (Start, Idle, Permission denied, Settings sheet) are built in the established style (Inter, `#F5F6F5`, `#0E1A15`/`#4F5E57`) and reviewed in the browser, with no Paper mocks first.
-2. **In-tune threshold:** enter at |cents| ≤ 5, exit at > 8.
+2. **In-tune threshold:** enter at |cents| ≤ 2, exit at > 4. (Originally ±5 / >8; tightened after iPhone testing showed nothing below 6 cents.)
 3. **Far-off display:** numbers clamp at `+99` / `-99`.
 4. **Lock glyph:** small outline padlock after the note name.
 5. **Licence:** MIT.

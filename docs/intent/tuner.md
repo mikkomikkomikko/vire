@@ -12,5 +12,5 @@ Design: https://app.paper.design/file/01M5828FGPE0Q5JKSQMVZB3CV4/p-2-0 (artboard
   - All settings persisted in localStorage
 - **Success:** Tuning a real guitar works on the phone, including a locked string in a noisy room, and screens match the Paper artboards.
 - **Constraints:** Vite + React + TypeScript; hosted on Vercel; open source on GitHub (MIT). iOS Safari requires a tap-to-start gesture before mic access.
-- **Assumptions:** In tune = within ±5 cents. Pitch detection in-browser, no backend. Desktop shows a centered phone-width column.
+- **Assumptions:** In tune = within ±2 cents (first ±5; tightened after device testing). Pitch detection in-browser, no backend. Desktop shows a centered phone-width column.
 - **Out of scope (v1):** Offline/PWA install, custom user-defined tunings, other instruments (bass etc.), reference-tone playback, accounts/backend.
