@@ -8,12 +8,13 @@ import styles from './TunerScreen.module.css'
 type Props = {
   state: TunerState
   locked: string | null
-  label: string
+  tuning: string
+  capo: number
   onStart: () => void
   onOpenSettings: () => void
 }
 
-export function TunerScreen({ state, locked, label, onStart, onOpenSettings }: Props) {
+export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettings }: Props) {
   const active = state.status === 'active' ? state : null
   const lastString = state.status === 'idle' ? state.lastString : null
   // A locked string is always the target, so show it even before anything is played.
@@ -31,7 +32,8 @@ export function TunerScreen({ state, locked, label, onStart, onOpenSettings }: P
         note={note}
         freq={active?.freq ?? null}
         locked={locked !== null}
-        label={label}
+        tuning={tuning}
+        capo={capo}
         dimmed={!active}
         onOpenSettings={onOpenSettings}
       />

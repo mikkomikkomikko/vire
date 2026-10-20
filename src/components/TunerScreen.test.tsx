@@ -17,7 +17,7 @@ const active = (cents: number, inTune = false): TunerState => ({
 
 function renderScreen(
   state: TunerState,
-  { locked = null as string | null, label = 'Standard' } = {},
+  { locked = null as string | null, tuning = 'Standard', capo = 0 } = {},
 ) {
   const onStart = vi.fn()
   const onOpenSettings = vi.fn()
@@ -25,7 +25,8 @@ function renderScreen(
     <TunerScreen
       state={state}
       locked={locked}
-      label={label}
+      tuning={tuning}
+      capo={capo}
       onStart={onStart}
       onOpenSettings={onOpenSettings}
     />,
@@ -96,8 +97,9 @@ describe('TunerScreen', () => {
   })
 
   test('the tuning label is a button that opens settings', async () => {
-    const { onOpenSettings } = renderScreen(active(12), { label: 'Drop D · Capo 2' })
-    await userEvent.click(screen.getByRole('button', { name: 'Settings: Drop D · Capo 2' }))
+    const { onOpenSettings } = renderScreen(active(12), { tuning: 'Drop D', capo: 2 })
+    expect(screen.getByText('Capo 2')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Settings: Drop D, capo 2' }))
     expect(onOpenSettings).toHaveBeenCalledOnce()
   })
 

@@ -6,7 +6,7 @@ import {
   parseSettings,
   saveSettings,
   STORAGE_KEY,
-  tuningLabel,
+  tuningName,
   withCapo,
   withInstrument,
   withLockedString,
@@ -83,11 +83,11 @@ describe('derived values', () => {
 
   test.each([
     [DEFAULT_SETTINGS, 'Standard'],
-    [dropD, 'Drop D · Capo 2'],
-    [withInstrument(DEFAULT_SETTINGS, 'ukulele'), 'Ukulele Standard'],
+    [dropD, 'Drop D'],
+    [withInstrument(DEFAULT_SETTINGS, 'ukulele'), 'Ukulele'],
     [withTuning(withInstrument(DEFAULT_SETTINGS, 'ukulele'), 'ukulele-low-g'), 'Ukulele Low G'],
-  ])('tuningLabel %#', (settings, label) => {
-    expect(tuningLabel(settings)).toBe(label)
+  ])('tuningName %#', (settings, label) => {
+    expect(tuningName(settings)).toBe(label)
   })
 })
 

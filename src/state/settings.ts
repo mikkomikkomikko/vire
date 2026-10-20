@@ -28,11 +28,11 @@ export function lockedTuningString(settings: Settings): TuningString | null {
   return currentTuning(settings).strings.find((s) => s.name === settings.lockedString) ?? null
 }
 
-/** Bottom-right label: "Standard", "Drop D · Capo 2", "Ukulele Standard". */
-export function tuningLabel(settings: Settings): string {
+/** Bottom-right label: "Standard", "Drop D", "Ukulele", "Ukulele Low G". The capo is shown separately. */
+export function tuningName(settings: Settings): string {
   const tuning = currentTuning(settings)
-  const name = tuning.instrument === 'ukulele' ? `Ukulele ${tuning.name}` : tuning.name
-  return settings.capo > 0 ? `${name} · Capo ${settings.capo}` : name
+  if (tuning.instrument === 'guitar') return tuning.name
+  return tuning.id === standardTuning('ukulele').id ? 'Ukulele' : `Ukulele ${tuning.name}`
 }
 
 export function withInstrument(settings: Settings, instrument: Instrument): Settings {

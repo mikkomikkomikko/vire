@@ -61,7 +61,7 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 
 ## 5. Settings sheet
 
-- [ ] Task: `SettingsSheet`: Instrument segmented, Tuning list, String chips (Auto + strings), Capo stepper 0–7; open from label button; backdrop/close/Esc; focus trap + return; detection continues behind
+- [x] Task: `SettingsSheet` (native `<dialog>`; swipe-to-dismiss not built): Instrument segmented, Tuning list, String chips (Auto + strings), Capo stepper 0–7; open from label button; backdrop/close/Esc; focus trap + return; detection continues behind
   - Acceptance: all F5 rules; settings survive reload
   - Verify: component tests + manual
   - Files: src/components/SettingsSheet.tsx, SettingsSheet.module.css, SettingsSheet.test.tsx, BottomBar.tsx

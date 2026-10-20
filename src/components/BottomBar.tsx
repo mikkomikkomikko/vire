@@ -4,12 +4,21 @@ type Props = {
   note: string | null
   freq: number | null
   locked: boolean
-  label: string
+  tuning: string
+  capo: number
   dimmed?: boolean
   onOpenSettings: () => void
 }
 
-export function BottomBar({ note, freq, locked, label, dimmed = false, onOpenSettings }: Props) {
+export function BottomBar({
+  note,
+  freq,
+  locked,
+  tuning,
+  capo,
+  dimmed = false,
+  onOpenSettings,
+}: Props) {
   return (
     <footer className={styles.bar}>
       <div className={`${styles.reading} ${dimmed ? styles.dimmed : ''}`}>
@@ -21,9 +30,11 @@ export function BottomBar({ note, freq, locked, label, dimmed = false, onOpenSet
         type="button"
         className={`${styles.secondary} ${styles.settings}`}
         onClick={onOpenSettings}
-        aria-label={`Settings: ${label}`}
+        aria-label={`Settings: ${tuning}${capo > 0 ? `, capo ${capo}` : ''}`}
       >
-        {label}
+        <span className={styles.tuning}>{tuning}</span>
+        {/* On its own line so a long tuning name never pushes the capo out of view. */}
+        {capo > 0 && <span className={styles.capo}>Capo {capo}</span>}
       </button>
     </footer>
   )
