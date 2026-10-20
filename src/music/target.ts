@@ -8,6 +8,9 @@ export const LOCKED_RANGE_CENTS = 900
 export const IN_TUNE_ENTER_CENTS = 2
 export const IN_TUNE_EXIT_CENTS = 4
 export const AUTO_SWITCH_MS = 150
+/** The check mark needs the reading to hold within ±1 cent for this long. */
+export const SETTLE_CENTS = 1
+export const SETTLE_MS = 2000
 
 export type Target = { string: TuningString; cents: number }
 
@@ -18,7 +21,11 @@ export type TargetConfig = {
   locked: TuningString | null
 }
 
-export type TrackedTarget = Target & { inTune: boolean }
+export type TrackedTarget = Target & {
+  inTune: boolean
+  /** Held within ±SETTLE_CENTS for SETTLE_MS: the string is done. */
+  settled: boolean
+}
 
 /** The pitch an open string actually sounds with a capo on `capo`. */
 export function soundingFreq(string: TuningString, capo: number): number {
@@ -52,11 +59,13 @@ export function createTargetTracker() {
   let candidate: TuningString | null = null
   let candidateSince = 0
   let inTune = false
+  let settledSince: number | null = null
 
   function reset() {
     current = null
     candidate = null
     inTune = false
+    settledSince = null
   }
 
   function update(freq: number, nowMs: number, config: TargetConfig): TrackedTarget | null {
@@ -81,12 +90,16 @@ export function createTargetTracker() {
       current = candidate
       candidate = null
       inTune = false
+      settledSince = null
     }
 
     const cents = centsBetween(freq, soundingFreq(current, config.capo))
     // Decide on the rounded value so the state always agrees with the number on screen.
     inTune = Math.abs(Math.round(cents)) <= (inTune ? IN_TUNE_EXIT_CENTS : IN_TUNE_ENTER_CENTS)
-    return { string: current, cents, inTune }
+    if (Math.abs(Math.round(cents)) <= SETTLE_CENTS) settledSince ??= nowMs
+    else settledSince = null
+    const settled = settledSince !== null && nowMs - settledSince >= SETTLE_MS
+    return { string: current, cents, inTune, settled }
   }
 
   return { update, reset }

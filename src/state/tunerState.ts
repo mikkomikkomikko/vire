@@ -6,4 +6,13 @@ export type TunerState =
   | { status: 'start'; resume?: boolean }
   | { status: 'denied' }
   | { status: 'idle'; lastString: TuningString | null }
-  | { status: 'active'; string: TuningString; freq: number; cents: number; inTune: boolean }
+  | {
+      status: 'active'
+      string: TuningString
+      freq: number
+      cents: number
+      /** Within ±2 cents: green background. */
+      inTune: boolean
+      /** Held within ±1 cent for 2 s: show the check mark. */
+      settled: boolean
+    }

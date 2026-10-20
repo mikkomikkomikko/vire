@@ -7,12 +7,13 @@ import { formatCents } from './formatCents'
 import { TunerScreen } from './TunerScreen'
 
 const E2 = standardTuning('guitar').strings[0]
-const active = (cents: number, inTune = false): TunerState => ({
+const active = (cents: number, inTune = false, settled = false): TunerState => ({
   status: 'active',
   string: E2,
   freq: 82.98,
   cents,
   inTune,
+  settled,
 })
 
 function renderScreen(
@@ -73,10 +74,16 @@ describe('TunerScreen', () => {
   })
 
   test('in tune: check mark on the mint background, no band or number', () => {
-    const { container } = renderScreen(active(0.3, true))
+    const { container } = renderScreen(active(0.3, true, true))
     expect(screen.getByRole('img', { name: 'In tune' })).toBeInTheDocument()
     expect(screen.queryByTestId('band')).toBeNull()
     expect(container.querySelector('main')).toHaveClass('inTune')
+  })
+
+  test('dead on but not held for 2 s yet: "0" on green, no check', () => {
+    renderScreen(active(0.2, true, false))
+    expect(screen.getByLabelText('0 cents')).toHaveTextContent('0')
+    expect(screen.queryByRole('img', { name: 'In tune' })).toBeNull()
   })
 
   test('in tune but not dead on: the number stays on the green so you can find 0', () => {

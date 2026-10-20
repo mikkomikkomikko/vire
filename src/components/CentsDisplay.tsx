@@ -6,6 +6,7 @@ export function CentsDisplay({ cents }: { cents: number }) {
   const { sign, value } = formatCents(cents)
   const band = Math.min(MAX_BAND_CENTS, Math.abs(Math.round(cents)))
   const direction = cents > 0 ? 'sharp' : 'flat'
+  const label = value === '0' ? '0 cents' : `${sign}${value} cents ${direction}`
 
   return (
     <>
@@ -14,7 +15,7 @@ export function CentsDisplay({ cents }: { cents: number }) {
         style={{ '--band-cents': band } as CSSProperties}
         data-testid="band"
       />
-      <div className={styles.number} aria-label={`${sign}${value} cents ${direction}`}>
+      <div className={styles.number} aria-label={label}>
         <span className={styles.sign} aria-hidden>
           {sign}
         </span>

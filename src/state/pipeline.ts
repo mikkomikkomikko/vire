@@ -36,6 +36,7 @@ export function createPipeline(detect = createDetector()) {
       freq: smoothed.freq,
       cents: tracked.cents,
       inTune: tracked.inTune,
+      settled: tracked.settled,
     }
   }
 }
@@ -48,6 +49,7 @@ export function sameScreen(a: TunerState, b: TunerState): boolean {
     return (
       a.string === b.string &&
       a.inTune === b.inTune &&
+      a.settled === b.settled &&
       Math.round(a.cents) === Math.round(b.cents) &&
       a.freq.toFixed(2) === b.freq.toFixed(2)
     )

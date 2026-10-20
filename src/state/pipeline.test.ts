@@ -56,7 +56,14 @@ test('locked mode ignores a pitch far from the locked string', () => {
 
 describe('sameScreen', () => {
   const E2 = standard.strings[0]
-  const base = { status: 'active' as const, string: E2, freq: 82.98, cents: 12.2, inTune: false }
+  const base = {
+    status: 'active' as const,
+    string: E2,
+    freq: 82.98,
+    cents: 12.2,
+    inTune: false,
+    settled: false,
+  }
 
   test('ignores changes that do not show on screen', () => {
     expect(sameScreen(base, { ...base, cents: 11.8, freq: 82.981 })).toBe(true)
@@ -66,6 +73,7 @@ describe('sameScreen', () => {
     expect(sameScreen(base, { ...base, cents: 13 })).toBe(false)
     expect(sameScreen(base, { ...base, freq: 83.0 })).toBe(false)
     expect(sameScreen(base, { ...base, inTune: true })).toBe(false)
+    expect(sameScreen(base, { ...base, settled: true })).toBe(false)
     expect(sameScreen(base, { status: 'idle', lastString: E2 })).toBe(false)
   })
 })

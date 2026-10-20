@@ -33,13 +33,8 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
   return (
     <main className={`${styles.screen} ${active?.inTune ? styles.inTune : ''}`}>
       <div className={styles.centre}>
-        {/* Green from ±2 cents, but the check only at a dead-on 0 so the last cent stays visible. */}
-        {active &&
-          (active.inTune && Math.round(active.cents) === 0 ? (
-            <InTuneMark />
-          ) : (
-            <CentsDisplay cents={active.cents} />
-          ))}
+        {/* Green from ±2 cents; the check only once the reading has held within ±1 for 2 s. */}
+        {active && (active.settled ? <InTuneMark /> : <CentsDisplay cents={active.cents} />)}
       </div>
       {state.status === 'start' && (
         <StartPrompt reason={state.resume ? 'resume' : 'start'} onStart={onStart} />
