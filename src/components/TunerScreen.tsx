@@ -22,21 +22,20 @@ type Props = {
 }
 
 export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettings }: Props) {
-  const active = state.status === 'active' ? state : null
-  const lastString = state.status === 'idle' ? state.lastString : null
-  // The check holds through the silence after a string is done, until the next signal.
-  const done = active ? active.settled : state.status === 'idle' && !!state.settled
+  // While idle, the last reading stays frozen on screen until the next note.
+  const reading = state.status === 'active' ? state : state.status === 'idle' ? state.last : null
+  const green = !!reading && (reading.inTune || reading.settled)
   // A locked string is always the target, so show it even before anything is played.
-  const target = active?.string ?? locked ?? lastString
+  const target = reading?.string ?? locked
   // The pitch to tune to (capo included); the measured pitch is already shown as cents.
   const targetFreq = target ? soundingFreq(target, capo) : null
-  useThemeColor(active?.inTune || done ? BG_IN_TUNE : BG)
+  useThemeColor(green ? BG_IN_TUNE : BG)
 
   return (
-    <main className={`${styles.screen} ${active?.inTune || done ? styles.inTune : ''}`}>
+    <main className={`${styles.screen} ${green ? styles.inTune : ''}`}>
       <div className={styles.centre}>
         {/* Green from ±2 cents; the check only once the reading has held within ±1 for 2 s. */}
-        {done ? <InTuneMark /> : active && <CentsDisplay cents={active.cents} />}
+        {reading && (reading.settled ? <InTuneMark /> : <CentsDisplay cents={reading.cents} />)}
       </div>
       {state.status === 'start' && (
         <StartPrompt reason={state.resume ? 'resume' : 'start'} onStart={onStart} />
@@ -48,7 +47,7 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
         locked={locked !== null}
         tuning={tuning}
         capo={capo}
-        dimmed={!active && !done}
+        dimmed={!reading}
         onOpenSettings={onOpenSettings}
       />
     </main>

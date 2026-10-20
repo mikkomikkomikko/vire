@@ -78,7 +78,7 @@ export function useTuner(config: TargetConfig, openInput: () => Promise<AudioInp
         inputRef.current = input
         if (!input.isRunning()) return pause()
       }
-      setState({ status: 'idle', lastString: null })
+      setState({ status: 'idle', last: null })
       loop(input)
     } catch {
       stop()

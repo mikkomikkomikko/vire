@@ -1,8 +1,7 @@
 import { createDetector } from '../audio/detector'
 import { createSmoother } from '../audio/smoothing'
 import { configKey, createTargetTracker, resolveTarget, type TargetConfig } from '../music/target'
-import type { TuningString } from '../music/tunings'
-import type { TunerState } from './tunerState'
+import type { Reading, TunerState } from './tunerState'
 
 type RunningState = Extract<TunerState, { status: 'idle' | 'active' }>
 
@@ -10,9 +9,8 @@ type RunningState = Extract<TunerState, { status: 'idle' | 'active' }>
 export function createPipeline(detect = createDetector()) {
   const smooth = createSmoother()
   const tracker = createTargetTracker()
-  let lastString: TuningString | null = null
-  // A string that reached the check stays "done" through the silence that follows.
-  let lastSettled = false
+  // The final reading stays on screen through the silence that follows, until the next note.
+  let last: Reading | null = null
   let lastKey = ''
 
   return function process(
@@ -25,8 +23,7 @@ export function createPipeline(detect = createDetector()) {
     if (key !== lastKey) {
       // A result for another tuning, capo or lock no longer applies.
       lastKey = key
-      lastString = null
-      lastSettled = false
+      last = null
     }
 
     const reading = detect(buffer, sampleRate)
@@ -37,36 +34,36 @@ export function createPipeline(detect = createDetector()) {
     const tracked = smoothed.freq === null ? null : tracker.update(smoothed.freq, nowMs, config)
     if (!tracked || smoothed.freq === null) {
       if (smoothed.idle) tracker.reset()
-      return { status: 'idle', lastString, settled: lastSettled }
+      return { status: 'idle', last }
     }
 
-    lastString = tracked.string
-    lastSettled = tracked.settled
-    return {
-      status: 'active',
+    last = {
       string: tracked.string,
       freq: smoothed.freq,
       cents: tracked.cents,
       inTune: tracked.inTune,
       settled: tracked.settled,
     }
+    return { status: 'active', ...last }
   }
+}
+
+/** True when two readings would render identically. */
+function sameReading(a: Reading | null, b: Reading | null): boolean {
+  if (!a || !b) return a === b
+  return (
+    a.string === b.string &&
+    a.inTune === b.inTune &&
+    a.settled === b.settled &&
+    Math.round(a.cents) === Math.round(b.cents) &&
+    a.freq.toFixed(2) === b.freq.toFixed(2)
+  )
 }
 
 /** True when two states would render identically, so React can skip the update. */
 export function sameScreen(a: TunerState, b: TunerState): boolean {
   if (a.status !== b.status) return false
-  if (a.status === 'idle' && b.status === 'idle') {
-    return a.lastString === b.lastString && a.settled === b.settled
-  }
-  if (a.status === 'active' && b.status === 'active') {
-    return (
-      a.string === b.string &&
-      a.inTune === b.inTune &&
-      a.settled === b.settled &&
-      Math.round(a.cents) === Math.round(b.cents) &&
-      a.freq.toFixed(2) === b.freq.toFixed(2)
-    )
-  }
+  if (a.status === 'idle' && b.status === 'idle') return sameReading(a.last, b.last)
+  if (a.status === 'active' && b.status === 'active') return sameReading(a, b)
   return true
 }

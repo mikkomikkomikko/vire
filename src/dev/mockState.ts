@@ -31,7 +31,7 @@ export function mockState(search: string): TunerState | null {
       // `?mock=intune` is the settled check; `&cents=1` shows a not-yet-settled reading on green.
       return centsParam ? active(Number(centsParam), true) : active(0, true, true)
     case 'idle':
-      return { status: 'idle', lastString: E2 }
+      return { status: 'idle', last: null }
     case 'start':
       return { status: 'start' }
     case 'resume':

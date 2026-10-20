@@ -94,23 +94,30 @@ describe('TunerScreen', () => {
     expect(screen.queryByRole('img', { name: 'In tune' })).toBeNull()
   })
 
-  test('idle: last string and its target, dimmed', () => {
-    renderScreen({ status: 'idle', lastString: E2 })
+  test('idle keeps the last reading frozen on screen', () => {
+    const { status: _status, ...last } = active(7) as Extract<TunerState, { status: 'active' }>
+    renderScreen({ status: 'idle', last })
+    expect(screen.getByLabelText('+7 cents sharp')).toBeInTheDocument()
+    expect(screen.getByTestId('band')).toHaveClass('sharp')
     expect(screen.getByText('E2')).toBeInTheDocument()
     expect(screen.getByText('82.41 Hz')).toBeInTheDocument()
-    expect(screen.queryByTestId('band')).toBeNull()
   })
 
   test('after a string is done, the check stays through silence', () => {
-    const { container } = renderScreen({ status: 'idle', lastString: E2, settled: true })
+    const { status: _status, ...last } = active(0, true, true) as Extract<
+      TunerState,
+      { status: 'active' }
+    >
+    const { container } = renderScreen({ status: 'idle', last })
     expect(screen.getByRole('img', { name: 'In tune' })).toBeInTheDocument()
     expect(container.querySelector('main')).toHaveClass('inTune')
     expect(screen.getByText('E2')).toBeInTheDocument()
   })
 
   test('nothing played yet: no note, no frequency', () => {
-    renderScreen({ status: 'idle', lastString: null })
+    renderScreen({ status: 'idle', last: null })
     expect(screen.getByText('— Hz')).toBeInTheDocument()
+    expect(screen.queryByTestId('band')).toBeNull()
   })
 
   test('with a capo the target is the capoed pitch', () => {
@@ -121,7 +128,7 @@ describe('TunerScreen', () => {
 
   test('locked: lock glyph, and the locked string shows even before playing', () => {
     const D3 = standardTuning('guitar').strings[2]
-    renderScreen({ status: 'idle', lastString: null }, { locked: D3 })
+    renderScreen({ status: 'idle', last: null }, { locked: D3 })
     expect(screen.getByText('D3')).toBeInTheDocument()
     expect(screen.getByText('146.83 Hz')).toBeInTheDocument()
     expect(screen.getByRole('img', { name: 'Locked' })).toBeInTheDocument()

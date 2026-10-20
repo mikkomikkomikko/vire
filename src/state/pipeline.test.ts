@@ -32,21 +32,20 @@ test('with capo 2, F#2 is E2 in tune', () => {
   expect(state).toMatchObject({ status: 'active', inTune: true, string: { name: 'E2' } })
 })
 
-test('silence starts idle with no last string', () => {
+test('silence starts idle with no last reading', () => {
   expect(createPipeline()(new Float32Array(4096), SAMPLE_RATE, 0, config)).toEqual({
     status: 'idle',
-    lastString: null,
-    settled: false,
+    last: null,
   })
 })
 
-test('holds the reading through a short gap, then goes idle remembering the string', () => {
+test('holds the reading through a short gap, then goes idle keeping the last reading', () => {
   const process = createPipeline()
   process(sawtooth(noteToFreq('A2')), SAMPLE_RATE, 0, config)
   expect(process(noise(4096, 0.001), SAMPLE_RATE, 500, config).status).toBe('active')
   const idle = process(noise(4096, 0.001), SAMPLE_RATE, 2000, config)
   expect(idle.status).toBe('idle')
-  expect(idle.status === 'idle' && idle.lastString?.name).toBe('A2')
+  expect(idle).toMatchObject({ status: 'idle', last: { string: { name: 'A2' }, inTune: true } })
 })
 
 test('locked mode ignores a pitch far from the locked string', () => {
@@ -75,8 +74,19 @@ describe('sameScreen', () => {
     expect(sameScreen(base, { ...base, freq: 83.0 })).toBe(false)
     expect(sameScreen(base, { ...base, inTune: true })).toBe(false)
     expect(sameScreen(base, { ...base, settled: true })).toBe(false)
-    expect(sameScreen(base, { status: 'idle', lastString: E2 })).toBe(false)
+    expect(sameScreen(base, { status: 'idle', last: null })).toBe(false)
+    const { status: _status, ...reading } = base
+    expect(sameScreen({ status: 'idle', last: reading }, { status: 'idle', last: reading })).toBe(
+      true,
+    )
   })
+})
+
+test('a reading that never reached 0 also stays on screen through silence', () => {
+  const process = createPipeline()
+  process(sawtooth(noteToFreq('A2') * 2 ** (7 / 1200)), SAMPLE_RATE, 0, config)
+  const idle = process(new Float32Array(4096), SAMPLE_RATE, 2000, config)
+  expect(idle.status === 'idle' && Math.round(idle.last!.cents)).toBe(7)
 })
 
 describe('a settled string', () => {
@@ -89,7 +99,7 @@ describe('a settled string', () => {
     const process = createPipeline()
     settle(process)
     const idle = process(silence, SAMPLE_RATE, 5000, config)
-    expect(idle).toMatchObject({ status: 'idle', settled: true, lastString: { name: 'A2' } })
+    expect(idle).toMatchObject({ status: 'idle', last: { settled: true, string: { name: 'A2' } } })
   })
 
   test('the next signal starts a fresh reading', () => {
@@ -104,6 +114,6 @@ describe('a settled string', () => {
     const process = createPipeline()
     settle(process)
     const idle = process(silence, SAMPLE_RATE, 5000, { ...config, capo: 1 })
-    expect(idle).toEqual({ status: 'idle', lastString: null, settled: false })
+    expect(idle).toEqual({ status: 'idle', last: null })
   })
 })
