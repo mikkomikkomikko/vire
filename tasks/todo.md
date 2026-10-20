@@ -18,28 +18,28 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 
 ## 2. Pure logic
 
-- [ ] Task: `music/notes.ts`: parse note names (incl. `#`/`b`), name ↔ midi ↔ Hz (A4=440), `centsBetween`
+- [x] Task: `music/notes.ts`: parse note names (incl. `#`/`b`), name ↔ midi ↔ Hz (A4=440), `centsBetween`
   - Acceptance: E2=82.41, A4=440.00, Eb2=77.78 Hz; cents symmetric
   - Verify: `npm test notes`
   - Files: src/music/notes.ts, notes.test.ts
-- [ ] Task: `music/tunings.ts`: F4 table as typed data, guitar + ukulele, ids stable
+- [x] Task: `music/tunings.ts`: F4 table as typed data, guitar + ukulele, ids stable
   - Acceptance: every string's Hz matches reference ±0.01; ukulele Standard is G4 C4 E4 A4
   - Verify: `npm test tunings`
   - Files: src/music/tunings.ts, tunings.test.ts
-- [ ] Task: `music/target.ts`: `soundingFreq` (capo), `resolveTarget` auto/locked with range limits, stateful auto-switch hysteresis (150 ms), in-tune hysteresis (≤5 enter, >8 exit)
+- [x] Task: `music/target.ts`: `soundingFreq` (capo), `resolveTarget` auto/locked with range limits, stateful auto-switch hysteresis (150 ms), in-tune hysteresis (≤5 enter, >8 exit)
   - Acceptance: capo 2 E2 → 92.50 Hz; G3/B3 no flicker; locked rejects >±900 cents; auto rejects >500 cents outside range
   - Verify: `npm test target`
   - Files: src/music/target.ts, target.test.ts
-- [ ] Task: `state/settings.ts` + `useSettings.ts`: type, defaults, validation, `vire.settings.v1` load/save with try/catch, F5 reset rules
+- [x] Task: `state/settings.ts` + `useSettings.ts`: type, defaults, validation, `vire.settings.v1` load/save with try/catch, F5 reset rules
   - Acceptance: corrupt/missing/throwing storage → defaults; instrument change resets tuning+string; tuning change resets string; capo kept
   - Verify: `npm test settings`
   - Files: src/state/settings.ts, useSettings.ts, settings.test.ts
-- [ ] Task: `audio/detector.ts` + `smoothing.ts`: pitchy wrapper with RMS gate + clarity ≥0.90; median-of-5; 1.5 s idle timeout
+- [x] Task: `audio/detector.ts` + `smoothing.ts`: pitchy wrapper with RMS gate + clarity ≥0.90; median-of-5; 1.5 s idle timeout
   - Acceptance: synthesized sine/sawtooth (+noise) E2, D2, C2, G4, A4 within ±1 cent; silence and white noise → null
   - Verify: `npm test detector smoothing`
   - Files: src/audio/detector.ts, smoothing.ts, *.test.ts, src/test/synth.ts
 
-**Checkpoint A:** all tests green.
+**Checkpoint A:** all tests green. ✅ Passed 2026-10-20: 175 tests, detector within ±1 cent on C2–A4 (sine, sawtooth, sawtooth + noise, 44.1 kHz).
 
 ## 3. Visuals on mock state
 
