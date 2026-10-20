@@ -1,6 +1,6 @@
 # Vire
 
-*Vire* is Finnish for "tuning" — *vireessä* means "in tune".
+_Vire_ is Finnish for "tuning" — _vireessä_ means "in tune".
 
 A minimal guitar and ukulele tuner for the browser. Pluck a string and Vire shows how many cents you are off; when you are in tune the screen turns green.
 

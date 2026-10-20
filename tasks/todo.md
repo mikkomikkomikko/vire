@@ -3,18 +3,21 @@
 See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 
 ## 0. Repository
-- [ ] Task: `git init` (branch `main`), `.gitignore` (node_modules, dist, .vercel, .DS_Store), MIT `LICENSE`, short `README.md` titled "Vire"; commit the existing docs (SPEC.md, docs/, tasks/); create a **public** GitHub repo `vire` with `gh repo create --public --source . --push`
+
+- [x] Task: `git init` (branch `main`), `.gitignore` (node_modules, dist, .vercel, .DS_Store), MIT `LICENSE`, short `README.md` titled "Vire"; commit the existing docs (SPEC.md, docs/, tasks/); create a **public** GitHub repo `vire` with `gh repo create --public --source . --push`
   - Acceptance: repo is public on GitHub, `main` is pushed and has the spec and plan; every following task ends with a commit + push
   - Verify: `gh repo view --web`
   - Files: .gitignore, LICENSE, README.md
 
 ## 1. Foundation
-- [ ] Task: Scaffold Vite + React 19 + TS (strict), Vitest + Testing Library + jsdom, ESLint, Prettier, `@fontsource-variable/inter`, `pitchy`, `@vitejs/plugin-basic-ssl`; `styles/tokens.css` with design colours
+
+- [x] Task: Scaffold Vite + React 19 + TS (strict), Vitest + Testing Library + jsdom, oxlint, Prettier, `@fontsource-variable/inter`, `pitchy`, `@vitejs/plugin-basic-ssl`; `styles/tokens.css` with design colours
   - Acceptance: npm scripts from SPEC "Commands" exist and run
   - Verify: `npm run build && npm test && npm run lint`
-  - Files: package.json, vite.config.ts, tsconfig*.json, eslint.config.js, .prettierrc, src/main.tsx, src/App.tsx, src/styles/*
+  - Files: package.json, vite.config.ts, tsconfig*.json, .oxlintrc.json, .prettierrc, src/main.tsx, src/App.tsx, src/styles/*
 
 ## 2. Pure logic
+
 - [ ] Task: `music/notes.ts`: parse note names (incl. `#`/`b`), name ↔ midi ↔ Hz (A4=440), `centsBetween`
   - Acceptance: E2=82.41, A4=440.00, Eb2=77.78 Hz; cents symmetric
   - Verify: `npm test notes`
@@ -39,6 +42,7 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 **Checkpoint A:** all tests green.
 
 ## 3. Visuals on mock state
+
 - [ ] Task: `TunerScreen`, `CentsDisplay` (band + blended number, ±99 clamp, tabular nums), `InTuneMark`, `BottomBar` (note, lock glyph, Hz, tuning label per F6); dev-only `?mock=sharp|flat|intune|idle` query to render states
   - Acceptance: F7/F8 values exactly per spec; reduced-motion disables transitions
   - Verify: component tests + browser screenshots at 390×844 vs Paper artboards
@@ -47,6 +51,7 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 **Checkpoint B:** you review the screenshots against Paper.
 
 ## 4. Wire audio
+
 - [ ] Task: `audio/mic.ts` (start on gesture, no browser processing, suspend/resume on visibility, stop) + `state/useTuner.ts` (rAF loop → TunerState) + `StartPrompt` and permission-denied state
   - Acceptance: tap starts mic; denial shows retry message; hidden tab suspends
   - Verify: unit tests for useTuner with a fake detector; manual tuning via desktop mic
@@ -55,12 +60,14 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 **Checkpoint C:** a real guitar tunes via the desktop mic.
 
 ## 5. Settings sheet
+
 - [ ] Task: `SettingsSheet`: Instrument segmented, Tuning list, String chips (Auto + strings), Capo stepper 0–7; open from label button; backdrop/close/Esc; focus trap + return; detection continues behind
   - Acceptance: all F5 rules; settings survive reload
   - Verify: component tests + manual
   - Files: src/components/SettingsSheet.tsx, SettingsSheet.module.css, SettingsSheet.test.tsx, BottomBar.tsx
 
 ## 6. Platform
+
 - [ ] Task: `index.html` `<title>Vire</title>` + meta (viewport-fit=cover, apple-mobile-web-app-*, theme-color), `manifest.webmanifest` (name "Vire", standalone), apple-touch-icon + favicon, safe-area padding, >480 px centred column
   - Acceptance: F9
   - Verify: `npm run build`; iPhone home-screen launch via LAN HTTPS dev server
@@ -69,6 +76,7 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 **Checkpoint D:** on-device checks from SPEC Success Criteria 3, 6, 7.
 
 ## 7. Ship (needs your go-ahead)
+
 - [ ] Task: Connect the GitHub repo to a Vercel project named `vire-tuner`; verify the production URL on iPhone
   - Acceptance: SPEC Success Criteria 1–8
   - Verify: production URL on iPhone + desktop browsers

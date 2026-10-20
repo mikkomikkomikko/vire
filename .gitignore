@@ -4,3 +4,7 @@ dist
 .DS_Store
 *.local
 coverage
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea

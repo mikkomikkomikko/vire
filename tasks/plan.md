@@ -26,15 +26,17 @@ audio/detector ──► audio/smoothing ──► audio/mic ┘
 7. **Ship:** connect the repo to Vercel as project `vire-tuner` (needs your go-ahead), then on-device verification.
 
 ## Checkpoints
+
 - **After 2:** `npm test` is green, and the detector is within ±1 cent on synthesized E2/C2/G4/A4.
 - **After 3:** browser screenshots at 390×844 match the three artboards (you review).
 - **After 4:** tuning a real guitar works via the desktop mic.
 - **After 6:** iPhone home-screen launch is fullscreen, the mic starts with one tap, and readings agree with a clip-on tuner within ±2 cents.
 
 ## Risks
-| Risk | Mitigation |
-|---|---|
+
+| Risk                                                                                          | Mitigation                                                                                                                                  |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | iOS Safari mic/AudioContext quirks (gesture, suspend on background, sample rate 48k vs 44.1k) | Create/resume only on tap; read `sampleRate` from the context; handle `visibilitychange`; test on-device early (checkpoint 4 via LAN HTTPS) |
-| Octave errors on low strings (E2/C2 harmonics) | MPM clarity gate; synthesized sawtooth tests; median filter |
-| Mic needs HTTPS on the phone during dev | `@vitejs/plugin-basic-ssl` + `vite --host` (spec'd dev command) |
-| `mix-blend-mode: difference` rendering differs across browsers | Verify in Safari/Chrome/Firefox at checkpoint 3 |
+| Octave errors on low strings (E2/C2 harmonics)                                                | MPM clarity gate; synthesized sawtooth tests; median filter                                                                                 |
+| Mic needs HTTPS on the phone during dev                                                       | `@vitejs/plugin-basic-ssl` + `vite --host` (spec'd dev command)                                                                             |
+| `mix-blend-mode: difference` rendering differs across browsers                                | Verify in Safari/Chrome/Firefox at checkpoint 3                                                                                             |
