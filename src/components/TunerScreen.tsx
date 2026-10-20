@@ -24,17 +24,19 @@ type Props = {
 export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettings }: Props) {
   const active = state.status === 'active' ? state : null
   const lastString = state.status === 'idle' ? state.lastString : null
+  // The check holds through the silence after a string is done, until the next signal.
+  const done = active ? active.settled : state.status === 'idle' && !!state.settled
   // A locked string is always the target, so show it even before anything is played.
   const target = active?.string ?? locked ?? lastString
   // The pitch to tune to (capo included); the measured pitch is already shown as cents.
   const targetFreq = target ? soundingFreq(target, capo) : null
-  useThemeColor(active?.inTune ? BG_IN_TUNE : BG)
+  useThemeColor(active?.inTune || done ? BG_IN_TUNE : BG)
 
   return (
-    <main className={`${styles.screen} ${active?.inTune ? styles.inTune : ''}`}>
+    <main className={`${styles.screen} ${active?.inTune || done ? styles.inTune : ''}`}>
       <div className={styles.centre}>
         {/* Green from ±2 cents; the check only once the reading has held within ±1 for 2 s. */}
-        {active && (active.settled ? <InTuneMark /> : <CentsDisplay cents={active.cents} />)}
+        {done ? <InTuneMark /> : active && <CentsDisplay cents={active.cents} />}
       </div>
       {state.status === 'start' && (
         <StartPrompt reason={state.resume ? 'resume' : 'start'} onStart={onStart} />
@@ -46,7 +48,7 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
         locked={locked !== null}
         tuning={tuning}
         capo={capo}
-        dimmed={!active}
+        dimmed={!active && !done}
         onOpenSettings={onOpenSettings}
       />
     </main>

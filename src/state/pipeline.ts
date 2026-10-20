@@ -1,6 +1,6 @@
 import { createDetector } from '../audio/detector'
 import { createSmoother } from '../audio/smoothing'
-import { createTargetTracker, resolveTarget, type TargetConfig } from '../music/target'
+import { configKey, createTargetTracker, resolveTarget, type TargetConfig } from '../music/target'
 import type { TuningString } from '../music/tunings'
 import type { TunerState } from './tunerState'
 
@@ -11,6 +11,9 @@ export function createPipeline(detect = createDetector()) {
   const smooth = createSmoother()
   const tracker = createTargetTracker()
   let lastString: TuningString | null = null
+  // A string that reached the check stays "done" through the silence that follows.
+  let lastSettled = false
+  let lastKey = ''
 
   return function process(
     buffer: Float32Array,
@@ -18,6 +21,14 @@ export function createPipeline(detect = createDetector()) {
     nowMs: number,
     config: TargetConfig,
   ): RunningState {
+    const key = configKey(config)
+    if (key !== lastKey) {
+      // A result for another tuning, capo or lock no longer applies.
+      lastKey = key
+      lastString = null
+      lastSettled = false
+    }
+
     const reading = detect(buffer, sampleRate)
     // Out-of-range pitches (voices, other instruments) count as silence.
     const freq = reading && resolveTarget(reading.freq, config) ? reading.freq : null
@@ -26,10 +37,11 @@ export function createPipeline(detect = createDetector()) {
     const tracked = smoothed.freq === null ? null : tracker.update(smoothed.freq, nowMs, config)
     if (!tracked || smoothed.freq === null) {
       if (smoothed.idle) tracker.reset()
-      return { status: 'idle', lastString }
+      return { status: 'idle', lastString, settled: lastSettled }
     }
 
     lastString = tracked.string
+    lastSettled = tracked.settled
     return {
       status: 'active',
       string: tracked.string,
@@ -44,7 +56,9 @@ export function createPipeline(detect = createDetector()) {
 /** True when two states would render identically, so React can skip the update. */
 export function sameScreen(a: TunerState, b: TunerState): boolean {
   if (a.status !== b.status) return false
-  if (a.status === 'idle' && b.status === 'idle') return a.lastString === b.lastString
+  if (a.status === 'idle' && b.status === 'idle') {
+    return a.lastString === b.lastString && a.settled === b.settled
+  }
   if (a.status === 'active' && b.status === 'active') {
     return (
       a.string === b.string &&

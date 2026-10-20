@@ -36,6 +36,7 @@ test('silence starts idle with no last string', () => {
   expect(createPipeline()(new Float32Array(4096), SAMPLE_RATE, 0, config)).toEqual({
     status: 'idle',
     lastString: null,
+    settled: false,
   })
 })
 
@@ -75,5 +76,34 @@ describe('sameScreen', () => {
     expect(sameScreen(base, { ...base, inTune: true })).toBe(false)
     expect(sameScreen(base, { ...base, settled: true })).toBe(false)
     expect(sameScreen(base, { status: 'idle', lastString: E2 })).toBe(false)
+  })
+})
+
+describe('a settled string', () => {
+  const silence = new Float32Array(4096)
+  const settle = (process: ReturnType<typeof createPipeline>, c = config) => {
+    for (let t = 0; t <= 2100; t += 100) process(sawtooth(noteToFreq('A2')), SAMPLE_RATE, t, c)
+  }
+
+  test('keeps its check through the silence that follows', () => {
+    const process = createPipeline()
+    settle(process)
+    const idle = process(silence, SAMPLE_RATE, 5000, config)
+    expect(idle).toMatchObject({ status: 'idle', settled: true, lastString: { name: 'A2' } })
+  })
+
+  test('the next signal starts a fresh reading', () => {
+    const process = createPipeline()
+    settle(process)
+    process(silence, SAMPLE_RATE, 5000, config)
+    const next = process(sawtooth(noteToFreq('D3')), SAMPLE_RATE, 5100, config)
+    expect(next).toMatchObject({ status: 'active', string: { name: 'D3' }, settled: false })
+  })
+
+  test('changing tuning, capo or lock clears the old result', () => {
+    const process = createPipeline()
+    settle(process)
+    const idle = process(silence, SAMPLE_RATE, 5000, { ...config, capo: 1 })
+    expect(idle).toEqual({ status: 'idle', lastString: null, settled: false })
   })
 })

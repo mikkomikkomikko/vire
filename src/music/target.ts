@@ -44,7 +44,7 @@ export function resolveTarget(freq: number, { tuning, capo, locked }: TargetConf
   return best && Math.abs(best.cents) <= range ? best : null
 }
 
-function configKey({ tuning, capo, locked }: TargetConfig): string {
+export function configKey({ tuning, capo, locked }: TargetConfig): string {
   return `${tuning.id}|${capo}|${locked?.name ?? ''}`
 }
 

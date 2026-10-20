@@ -101,6 +101,13 @@ describe('TunerScreen', () => {
     expect(screen.queryByTestId('band')).toBeNull()
   })
 
+  test('after a string is done, the check stays through silence', () => {
+    const { container } = renderScreen({ status: 'idle', lastString: E2, settled: true })
+    expect(screen.getByRole('img', { name: 'In tune' })).toBeInTheDocument()
+    expect(container.querySelector('main')).toHaveClass('inTune')
+    expect(screen.getByText('E2')).toBeInTheDocument()
+  })
+
   test('nothing played yet: no note, no frequency', () => {
     renderScreen({ status: 'idle', lastString: null })
     expect(screen.getByText('— Hz')).toBeInTheDocument()
