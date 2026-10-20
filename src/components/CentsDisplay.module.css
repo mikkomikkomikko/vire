@@ -1,0 +1,52 @@
+/*
+ * From the Paper artboards: 7.2 px of band per cent on an 844 px tall screen. The band never
+ * grows into the bottom row (44 px text + 56 px padding + 20 px gap), so the note stays legible.
+ */
+.band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: min(
+    calc(var(--band-cents) * 100dvh * 7.2 / 844),
+    calc(50dvh - 120px - env(safe-area-inset-bottom))
+  );
+  transition: height 120ms ease-out;
+}
+
+.sharp {
+  bottom: 50%;
+  background: linear-gradient(180deg, var(--color-band-light), var(--color-black));
+}
+
+.flat {
+  top: 50%;
+  background: linear-gradient(180deg, var(--color-black), var(--color-band-light));
+}
+
+.number {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: flex;
+  justify-content: center;
+  color: #ffffff;
+  mix-blend-mode: difference;
+  font-size: min(169px, 44vw);
+  font-weight: 700;
+  line-height: 1.207;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.sign {
+  /* Paper sets the sign in a taller, top-aligned box, which lifts it ~12 px above the digits. */
+  position: relative;
+  top: -0.071em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .band {
+    transition: none;
+  }
+}

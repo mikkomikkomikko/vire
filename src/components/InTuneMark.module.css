@@ -1,0 +1,13 @@
+.mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: min(136px, 35vw);
+  height: auto;
+  fill: none;
+  stroke: var(--color-black);
+  stroke-width: 24;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

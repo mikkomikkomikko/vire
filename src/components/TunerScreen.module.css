@@ -1,0 +1,27 @@
+.screen {
+  position: fixed;
+  inset: 0;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--color-bg);
+  transition: background-color 120ms ease-out;
+}
+
+.inTune {
+  background: var(--color-bg-in-tune);
+}
+
+.centre {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screen {
+    transition: none;
+  }
+}

@@ -43,7 +43,7 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 
 ## 3. Visuals on mock state
 
-- [ ] Task: `TunerScreen`, `CentsDisplay` (band + blended number, ±99 clamp, tabular nums), `InTuneMark`, `BottomBar` (note, lock glyph, Hz, tuning label per F6); dev-only `?mock=sharp|flat|intune|idle` query to render states
+- [x] Task: `TunerScreen`, `CentsDisplay` (band + blended number, ±99 clamp, tabular nums), `InTuneMark`, `BottomBar` (note, lock glyph, Hz, tuning label per F6); dev-only `?mock=sharp|flat|intune|idle` query to render states
   - Acceptance: F7/F8 values exactly per spec; reduced-motion disables transitions
   - Verify: component tests + browser screenshots at 390×844 vs Paper artboards
   - Files: src/components/TunerScreen.tsx, CentsDisplay.tsx, InTuneMark.tsx, BottomBar.tsx, *.module.css, *.test.tsx

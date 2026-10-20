@@ -97,10 +97,10 @@ Hysteresis: enter In tune at |cents| ≤ 5 and leave it at |cents| > 8, so the s
 ### F8. Cents visual (from the Paper design)
 
 - Background `#F5F6F5` (sharp/flat). In tune: `#CFECDE`.
-- **Band:** full-width bar anchored to the vertical centre line of the viewport. Its height is |cents| × unit, where unit = 7.2 px at an 844 px viewport height (i.e. `0.853vh` per cent), clamped at 50 cents.
+- **Band:** full-width bar anchored to the vertical centre line of the viewport. Its height is |cents| × unit, where unit = 7.2 px at an 844 px viewport height (i.e. `0.853vh` per cent), clamped at 50 cents, and never closer than 20 px to the bottom row so the note stays legible.
   - Sharp: the band grows **upward** from the centre line, `linear-gradient(180deg, #434343, #000000)` (darkest at the centre line).
   - Flat: the band grows **downward** from the centre line, `linear-gradient(180deg, #000000, #434343)`.
-- **Number:** sign + integer (`+12`, `-6`), Inter Bold 169px / 204px line-height, white, `mix-blend-mode: difference`, centred on the viewport. It shows black on the light background and white over the band. Values beyond ±99 display as `+99` / `-99`. Use tabular numerals so the width doesn't jitter.
+- **Number:** sign + integer (`+12`, `-6`), Inter Bold 169px / 204px line-height, white, `mix-blend-mode: difference`, centred on the viewport. It shows black on the light background and white over the band. Values beyond ±99 display as `+99` / `-99`. Use Inter's default proportional digits as in the design (tabular figures give the "1" a foot), and lift the sign by ~12 px (0.071em) as Paper does.
 - **In tune:** a black check mark (✓, Inter Bold 169px or an SVG of the same weight) centred, with no band and no number.
 - Transitions: band height and background colour animate over ~120 ms ease-out. Disable under `prefers-reduced-motion`.
 

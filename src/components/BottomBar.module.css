@@ -1,0 +1,63 @@
+.bar {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  padding: 0 24px max(56px, calc(env(safe-area-inset-bottom) + 24px));
+}
+
+.reading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  transition: opacity 120ms ease-out;
+}
+
+.dimmed {
+  opacity: 0.4;
+}
+
+.note {
+  color: var(--color-ink);
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 44px;
+}
+
+.secondary {
+  color: var(--color-ink-muted);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.lock {
+  align-self: center;
+  width: 16px;
+  height: 16px;
+  margin-left: -4px;
+  fill: none;
+  stroke: var(--color-ink-muted);
+  stroke-width: 1.5;
+}
+
+.settings {
+  flex: 1;
+  margin: -12px -12px -12px 0;
+  padding: 12px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  text-align: right;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.settings:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: -4px;
+  border-radius: 8px;
+}
