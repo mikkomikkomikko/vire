@@ -15,8 +15,14 @@ Works best saved to your phone's home screen.
 
 ```bash
 npm install
-npm run dev
+npm run dev         # http://localhost:5173
+npm run dev:https   # LAN + self-signed HTTPS, so the mic works on a phone
+npm test
 ```
+
+Dev-only URL switches: `?mock=sharp|flat|intune|idle|start|denied` (plus `&cents=30`) fixes the screen state, and `?tone=82.41` replaces the mic with a test tone.
+
+Icons are generated from code: `node scripts/make-icons.mjs`.
 
 See [SPEC.md](SPEC.md) for the full specification and [tasks/](tasks/) for the build plan.
 

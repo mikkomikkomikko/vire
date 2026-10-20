@@ -68,7 +68,7 @@ See [plan.md](plan.md) and [SPEC.md](../SPEC.md).
 
 ## 6. Platform
 
-- [ ] Task: `index.html` `<title>Vire</title>` + meta (viewport-fit=cover, apple-mobile-web-app-*, theme-color), `manifest.webmanifest` (name "Vire", standalone), apple-touch-icon + favicon, safe-area padding, >480 px centred column
+- [x] Task: `index.html` `<title>Vire</title>` + meta (viewport-fit=cover, apple-mobile-web-app-*, theme-color), `manifest.webmanifest` (name "Vire", standalone), apple-touch-icon + favicon, safe-area padding, >480 px centred column
   - Acceptance: F9
   - Verify: `npm run build`; iPhone home-screen launch via LAN HTTPS dev server
   - Files: index.html, public/*, src/styles/global.css

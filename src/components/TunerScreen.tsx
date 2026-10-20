@@ -4,6 +4,11 @@ import { CentsDisplay } from './CentsDisplay'
 import { InTuneMark } from './InTuneMark'
 import { StartPrompt } from './StartPrompt'
 import styles from './TunerScreen.module.css'
+import { useThemeColor } from './useThemeColor'
+
+// Same values as --color-bg / --color-bg-in-tune in tokens.css.
+const BG = '#F5F6F5'
+const BG_IN_TUNE = '#CFECDE'
 
 type Props = {
   state: TunerState
@@ -19,6 +24,7 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
   const lastString = state.status === 'idle' ? state.lastString : null
   // A locked string is always the target, so show it even before anything is played.
   const note = active?.string.name ?? locked ?? lastString?.name ?? null
+  useThemeColor(active?.inTune ? BG_IN_TUNE : BG)
 
   return (
     <main className={`${styles.screen} ${active?.inTune ? styles.inTune : ''}`}>

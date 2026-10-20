@@ -125,4 +125,24 @@ describe('TunerScreen', () => {
     expect(onOpenSettings).toHaveBeenCalledOnce()
     expect(onStart).not.toHaveBeenCalled()
   })
+
+  test('keeps the theme colour in step with the screen', () => {
+    const meta = document.createElement('meta')
+    meta.name = 'theme-color'
+    document.head.append(meta)
+    const { rerender } = renderScreen(active(12))
+    expect(meta.content).toBe('#F5F6F5')
+    rerender(
+      <TunerScreen
+        state={active(1, true)}
+        locked={null}
+        tuning="Standard"
+        capo={0}
+        onStart={() => {}}
+        onOpenSettings={() => {}}
+      />,
+    )
+    expect(meta.content).toBe('#CFECDE')
+    meta.remove()
+  })
 })
