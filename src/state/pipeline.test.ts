@@ -16,12 +16,12 @@ test('a detuned E2 becomes an active +12 cents reading on E2', () => {
   expect(state.string.name).toBe('E2')
   expect(state.cents).toBeCloseTo(12, 0)
   expect(state.freq).toBeCloseTo(82.98, 1)
-  expect(state.inTune).toBe(false)
 })
 
-test('an in-tune string is reported in tune', () => {
+test('an in-tune string reads 0 cents', () => {
   const state = createPipeline()(sawtooth(noteToFreq('G3')), SAMPLE_RATE, 0, config)
-  expect(state).toMatchObject({ status: 'active', inTune: true })
+  expect(state).toMatchObject({ status: 'active', string: { name: 'G3' } })
+  expect(state.status === 'active' && Math.abs(Math.round(state.cents))).toBe(0)
 })
 
 test('with capo 2, F#2 is E2 in tune', () => {
@@ -29,7 +29,8 @@ test('with capo 2, F#2 is E2 in tune', () => {
     ...config,
     capo: 2,
   })
-  expect(state).toMatchObject({ status: 'active', inTune: true, string: { name: 'E2' } })
+  expect(state).toMatchObject({ status: 'active', string: { name: 'E2' } })
+  expect(state.status === 'active' && Math.abs(Math.round(state.cents))).toBe(0)
 })
 
 test('silence starts idle with no last reading', () => {
@@ -45,7 +46,7 @@ test('holds the reading through a short gap, then goes idle keeping the last rea
   expect(process(noise(4096, 0.001), SAMPLE_RATE, 500, config).status).toBe('active')
   const idle = process(noise(4096, 0.001), SAMPLE_RATE, 2000, config)
   expect(idle.status).toBe('idle')
-  expect(idle).toMatchObject({ status: 'idle', last: { string: { name: 'A2' }, inTune: true } })
+  expect(idle).toMatchObject({ status: 'idle', last: { string: { name: 'A2' } } })
 })
 
 test('locked mode ignores a pitch far from the locked string', () => {
@@ -61,8 +62,6 @@ describe('sameScreen', () => {
     string: E2,
     freq: 82.98,
     cents: 12.2,
-    inTune: false,
-    settled: false,
   }
 
   test('ignores changes that do not show on screen', () => {
@@ -72,8 +71,6 @@ describe('sameScreen', () => {
   test('notices changes that do', () => {
     expect(sameScreen(base, { ...base, cents: 13 })).toBe(false)
     expect(sameScreen(base, { ...base, freq: 83.0 })).toBe(false)
-    expect(sameScreen(base, { ...base, inTune: true })).toBe(false)
-    expect(sameScreen(base, { ...base, settled: true })).toBe(false)
     expect(sameScreen(base, { status: 'idle', last: null })).toBe(false)
     const { status: _status, ...reading } = base
     expect(sameScreen({ status: 'idle', last: reading }, { status: 'idle', last: reading })).toBe(
@@ -89,17 +86,18 @@ test('a reading that never reached 0 also stays on screen through silence', () =
   expect(idle.status === 'idle' && Math.round(idle.last!.cents)).toBe(7)
 })
 
-describe('a settled string', () => {
+describe('an in-tune string', () => {
   const silence = new Float32Array(4096)
   const settle = (process: ReturnType<typeof createPipeline>, c = config) => {
-    for (let t = 0; t <= 2100; t += 100) process(sawtooth(noteToFreq('A2')), SAMPLE_RATE, t, c)
+    for (let t = 0; t <= 500; t += 100) process(sawtooth(noteToFreq('A2')), SAMPLE_RATE, t, c)
   }
 
-  test('keeps its check through the silence that follows', () => {
+  test('keeps its reading through the silence that follows', () => {
     const process = createPipeline()
     settle(process)
     const idle = process(silence, SAMPLE_RATE, 5000, config)
-    expect(idle).toMatchObject({ status: 'idle', last: { settled: true, string: { name: 'A2' } } })
+    expect(idle).toMatchObject({ status: 'idle', last: { string: { name: 'A2' } } })
+    expect(idle.status === 'idle' && Math.abs(Math.round(idle.last!.cents))).toBe(0)
   })
 
   test('the next signal starts a fresh reading', () => {
@@ -107,7 +105,7 @@ describe('a settled string', () => {
     settle(process)
     process(silence, SAMPLE_RATE, 5000, config)
     const next = process(sawtooth(noteToFreq('D3')), SAMPLE_RATE, 5100, config)
-    expect(next).toMatchObject({ status: 'active', string: { name: 'D3' }, settled: false })
+    expect(next).toMatchObject({ status: 'active', string: { name: 'D3' } })
   })
 
   test('changing tuning, capo or lock clears the old result', () => {

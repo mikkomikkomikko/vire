@@ -7,7 +7,8 @@
   flex-direction: column;
   justify-content: flex-end;
   background: var(--color-bg);
-  transition: background-color 120ms ease-out;
+  /* A slow fade, so turning green reads as arriving rather than a flash; it fades back the same. */
+  transition: background-color 600ms ease-in-out;
 }
 
 .inTune {

@@ -11,7 +11,6 @@
     calc(var(--band-cents) * 100dvh * 7.2 / 844),
     calc(50dvh - 170px - env(safe-area-inset-bottom))
   );
-  transition: height 120ms ease-out;
 }
 
 .sharp {
@@ -40,14 +39,23 @@
   user-select: none;
 }
 
+/*
+ * Evenly spaced digits without `tabular-nums`: Inter's tabular "1" grows a foot that the design
+ * doesn't have (no stylistic set removes it), so each proportional digit is centred in a cell as
+ * wide as Inter's tabular figures (0.646em).
+ */
+.digit {
+  display: inline-block;
+  width: 0.646em;
+  text-align: center;
+}
+
 .sign {
+  /* As wide as "+", so switching between + and - doesn't move the digits. */
+  display: inline-block;
+  width: 0.679em;
+  text-align: center;
   /* Paper sets the sign in a taller, top-aligned box, which lifts it ~12 px above the digits. */
   position: relative;
   top: -0.071em;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .band {
-    transition: none;
-  }
 }

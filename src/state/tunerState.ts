@@ -5,10 +5,6 @@ export type Reading = {
   string: TuningString
   freq: number
   cents: number
-  /** Within ±2 cents: green background. */
-  inTune: boolean
-  /** Held within ±1 cent for 2 s: show the check mark. */
-  settled: boolean
 }
 
 /** Everything the main screen needs to render; produced by `useTuner` (or a dev mock). */
