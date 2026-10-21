@@ -19,9 +19,10 @@ type Props = {
   capo: number
   onStart: () => void
   onOpenSettings: () => void
+  onOpenPrivacy: () => void
 }
 
-export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettings }: Props) {
+export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettings, onOpenPrivacy }: Props) {
   // While idle, the last reading stays frozen on screen until the next note.
   const reading = state.status === 'active' ? state : state.status === 'idle' ? state.last : null
   const green = !!reading && (reading.inTune || reading.settled)
@@ -30,6 +31,7 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
   // The pitch to tune to (capo included); the measured pitch is already shown as cents.
   const targetFreq = target ? soundingFreq(target, capo) : null
   useThemeColor(green ? BG_IN_TUNE : BG)
+  const prompt = state.status === 'start' || state.status === 'denied'
 
   return (
     <main className={`${styles.screen} ${green ? styles.inTune : ''}`}>
@@ -38,18 +40,27 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
         {reading && (reading.settled ? <InTuneMark /> : <CentsDisplay cents={reading.cents} />)}
       </div>
       {state.status === 'start' && (
-        <StartPrompt reason={state.resume ? 'resume' : 'start'} onStart={onStart} />
+        <StartPrompt
+          reason={state.resume ? 'resume' : 'start'}
+          onStart={onStart}
+          onPrivacy={onOpenPrivacy}
+        />
       )}
-      {state.status === 'denied' && <StartPrompt reason="denied" onStart={onStart} />}
-      <BottomBar
-        note={target?.name ?? null}
-        freq={targetFreq}
-        locked={locked !== null}
-        tuning={tuning}
-        capo={capo}
-        dimmed={!reading}
-        onOpenSettings={onOpenSettings}
-      />
+      {state.status === 'denied' && (
+        <StartPrompt reason="denied" onStart={onStart} onPrivacy={onOpenPrivacy} />
+      )}
+      {/* The prompt has the screen to itself; the note and tuning come back once it's gone. */}
+      {!prompt && (
+        <BottomBar
+          note={target?.name ?? null}
+          freq={targetFreq}
+          locked={locked !== null}
+          tuning={tuning}
+          capo={capo}
+          dimmed={!reading}
+          onOpenSettings={onOpenSettings}
+        />
+      )}
     </main>
   )
 }

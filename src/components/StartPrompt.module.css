@@ -6,7 +6,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 0 48px;
+  padding: 0 32px 160px;
   border: 0;
   background: none;
   font-family: inherit;
@@ -24,17 +24,63 @@
   text-underline-offset: 6px;
 }
 
+.title,
+.body {
+  position: relative;
+}
+
 .title {
   color: var(--color-ink);
   font-size: 32px;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 40px;
   letter-spacing: -0.01em;
 }
 
 .body {
-  max-width: 280px;
+  max-width: 320px;
   color: var(--color-ink-muted);
   font-size: 16px;
   line-height: 22px;
+}
+
+/* The peg, large and cropped off the bottom right; the text sits over it. Sized in px so it keeps
+   the same crop on any width, anchored to the bottom so taller screens only add space above it. */
+.figure {
+  position: absolute;
+  width: 1252px;
+  left: calc(50% - 601px);
+  bottom: -208px;
+}
+
+.sentence {
+  display: block;
+  text-wrap: balance;
+}
+
+.privacy {
+  position: absolute;
+  left: 50%;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  translate: -50% 0;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 999px;
+  /* Masks the peg's lines behind the words */
+  background: var(--color-bg);
+  color: var(--color-ink-muted);
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 20px;
+  text-decoration: underline;
+  text-decoration-color: rgb(79 94 87 / 0.4);
+  text-underline-offset: 4px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.privacy:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+  border-radius: 8px;
 }

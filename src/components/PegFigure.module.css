@@ -1,0 +1,8 @@
+.figure {
+  /* the figure's palette, on the app's background instead of white */
+  --hairline-plate: var(--color-bg);
+  --hairline-hi: var(--color-ink);
+  --hairline-edge: #8f9893;
+  --hairline-mid: #b4bcb8;
+  --hairline-lo: #d6dbd8;
+}

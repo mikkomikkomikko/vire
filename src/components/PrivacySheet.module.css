@@ -1,0 +1,23 @@
+.text {
+  margin: 0 0 12px;
+  font-size: 16px;
+  line-height: 24px;
+  /* The sheet is reading material; let it be selected and copied. */
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.text:last-child {
+  margin-bottom: 0;
+}
+
+/* Looks like the Settings legends */
+.heading {
+  margin: 0 0 10px;
+  color: var(--color-ink-muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
