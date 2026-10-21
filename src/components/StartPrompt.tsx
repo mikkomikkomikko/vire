@@ -29,7 +29,7 @@ export function StartPrompt({
   return (
     <>
       <button type="button" className={styles.prompt} onClick={onStart}>
-        <MicFigure className={styles.figure} />
+        <MicFigure off={reason === 'denied'} className={styles.figure} />
         <span className={styles.title}>{title}</span>
         <span className={styles.body}>
           {/* One sentence a line, as long as the screen allows */}

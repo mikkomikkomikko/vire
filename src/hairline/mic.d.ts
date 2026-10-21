@@ -1,1 +1,1 @@
-export function mountMic(stage: HTMLElement, tilt?: number): () => void
+export function mountMic(stage: HTMLElement, options?: { off?: boolean }): () => void
