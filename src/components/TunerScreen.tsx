@@ -10,7 +10,7 @@ import { useThemeColor } from './useThemeColor'
 
 // Same values as --color-bg / --color-bg-in-tune in tokens.css.
 const BG = '#F5F6F5'
-const BG_IN_TUNE = '#CFECDE'
+const BG_IN_TUNE = '#B0E1CA'
 
 type Props = {
   state: TunerState

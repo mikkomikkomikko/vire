@@ -162,10 +162,10 @@ describe('TunerScreen', () => {
       renderScreen(active(0))
       expect(meta.content).toBe('#F5F6F5')
       await wait(IN_TUNE_HOLD_MS)
-      expect(meta.content).toBe('#CFECDE')
+      expect(meta.content).toBe('#B0E1CA')
       // Safari colours its bars from the page background, so that must follow too.
-      expect(document.body.style.backgroundColor).toBe('rgb(207, 236, 222)')
-      expect(document.documentElement.style.backgroundColor).toBe('rgb(207, 236, 222)')
+      expect(document.body.style.backgroundColor).toBe('rgb(176, 225, 202)')
+      expect(document.documentElement.style.backgroundColor).toBe('rgb(176, 225, 202)')
       meta.remove()
     })
   })
