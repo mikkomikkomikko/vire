@@ -2,7 +2,7 @@
 
 Design: https://app.paper.design/file/01M5828FGPE0Q5JKSQMVZB3CV4/p-2-0 (artboards "04 - in tune", "04 - sharp", "04 - flat", 390×844)
 
-- **Outcome:** Guitar/ukulele tuner web app matching the Paper design. Three states: green check when in tune, +cents when sharp, −cents when flat. Note name + Hz bottom-left; tuning name bottom-right opens settings.
+- **Outcome:** Guitar/ukulele tuner web app matching the Paper design. Three states: green background when in tune (no check mark), +cents when sharp, −cents when flat. Note name + Hz bottom-left; tuning name bottom-right opens settings.
 - **User:** Primarily the author on an iPhone home-screen bookmark (fullscreen launch via standalone web-app meta tags). Public, so it must also work as a normal responsive site on any device.
 - **Settings sheet** (opened from the tuning label, e.g. "Standard"):
   - Instrument: Guitar / Ukulele
@@ -12,5 +12,5 @@ Design: https://app.paper.design/file/01M5828FGPE0Q5JKSQMVZB3CV4/p-2-0 (artboard
   - All settings persisted in localStorage
 - **Success:** Tuning a real guitar works on the phone, including a locked string in a noisy room, and screens match the Paper artboards.
 - **Constraints:** Vite + React + TypeScript; hosted on Vercel; open source on GitHub (MIT). iOS Safari requires a tap-to-start gesture before mic access.
-- **Assumptions:** In tune = within ±2 cents (first ±5; tightened after device testing). Pitch detection in-browser, no backend. Desktop shows a centered phone-width column.
+- **Assumptions:** In tune = the displayed number has held at 0 for 2 s (first ±5 cents, then ±2, then this after device testing). Pitch detection in-browser, no backend. Desktop shows a centered phone-width column.
 - **Out of scope (v1):** Offline/PWA install, custom user-defined tunings, other instruments (bass etc.), reference-tone playback, accounts/backend.

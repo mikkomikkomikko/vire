@@ -13,23 +13,21 @@ export function mockState(search: string): TunerState | null {
   const mock = params.get('mock')
   const centsParam = params.get('cents')
 
-  const active = (cents: number, inTune: boolean, settled = false): TunerState => ({
+  const active = (cents: number): TunerState => ({
     status: 'active',
     string: E2,
     freq: noteToFreq('E2') * 2 ** (cents / 1200),
     cents,
-    inTune,
-    settled,
   })
 
   switch (mock) {
     case 'sharp':
-      return active(centsParam ? Number(centsParam) : 12, false)
+      return active(centsParam ? Number(centsParam) : 12)
     case 'flat':
-      return active(centsParam ? Number(centsParam) : -6, false)
+      return active(centsParam ? Number(centsParam) : -6)
     case 'intune':
-      // `?mock=intune` is the settled check; `&cents=1` shows a not-yet-settled reading on green.
-      return centsParam ? active(Number(centsParam), true) : active(0, true, true)
+      // `?mock=intune` is dead on: the screen turns green after IN_TUNE_HOLD_MS.
+      return active(centsParam ? Number(centsParam) : 0)
     case 'idle':
       return { status: 'idle', last: null }
     case 'start':

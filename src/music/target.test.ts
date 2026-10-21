@@ -112,49 +112,6 @@ describe('createTargetTracker', () => {
     expect(tracker.update(B3, 10, auto(standard))?.cents).toBeCloseTo(400, 6)
   })
 
-  test('in-tune hysteresis on displayed (rounded) cents: enter at ≤2, stay until >4', () => {
-    const tracker = createTargetTracker()
-    const at = (cents: number, t: number) => tracker.update(centsOff(G3, cents), t, auto(standard))
-    expect(at(3, 0)?.inTune).toBe(false)
-    expect(at(2.6, 5)?.inTune).toBe(false)
-    expect(at(2.4, 10)?.inTune).toBe(true)
-    expect(at(4.4, 20)?.inTune).toBe(true)
-    expect(at(-4.4, 30)?.inTune).toBe(true)
-    expect(at(4.6, 40)?.inTune).toBe(false)
-    expect(at(3, 50)?.inTune).toBe(false)
-    expect(at(-2, 60)?.inTune).toBe(true)
-  })
-
-  test('settles after holding within ±1 cent for 2 s', () => {
-    const tracker = createTargetTracker()
-    const at = (cents: number, t: number) => tracker.update(centsOff(G3, cents), t, auto(standard))
-    expect(at(0.4, 0)?.settled).toBe(false)
-    expect(at(-1.2, 1000)?.settled).toBe(false) // rounds to -1: still counting
-    expect(at(1, 1999)?.settled).toBe(false)
-    expect(at(0, 2000)?.settled).toBe(true)
-    expect(at(0.9, 5000)?.settled).toBe(true)
-  })
-
-  test('drifting past ±1 restarts the 2 s count', () => {
-    const tracker = createTargetTracker()
-    const at = (cents: number, t: number) => tracker.update(centsOff(G3, cents), t, auto(standard))
-    at(0, 0)
-    expect(at(0, 2500)?.settled).toBe(true)
-    const drifted = at(1.6, 2600)
-    expect(drifted?.settled).toBe(false)
-    expect(drifted?.inTune).toBe(true) // still green, just not done
-    expect(at(0, 2700)?.settled).toBe(false)
-    expect(at(0, 4699)?.settled).toBe(false)
-    expect(at(0, 4700)?.settled).toBe(true)
-  })
-
-  test('switching strings or settings restarts the count', () => {
-    const tracker = createTargetTracker()
-    tracker.update(G3, 0, auto(standard))
-    expect(tracker.update(G3, 2000, auto(standard))?.settled).toBe(true)
-    expect(tracker.update(noteToFreq('F#2'), 2100, auto(standard, 2))?.settled).toBe(false)
-  })
-
   test('changing tuning, capo or lock resets the held target', () => {
     const tracker = createTargetTracker()
     tracker.update(G3, 0, auto(standard))
