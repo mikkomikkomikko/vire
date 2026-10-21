@@ -40,23 +40,17 @@ test('shows the current settings', () => {
   expect(screen.getByRole('dialog', { name: 'Settings' })).toBeInTheDocument()
   expect(checked('Instrument')).toEqual(['Guitar'])
   expect(checked('Tuning')).toEqual(['StandardE A D G B E'])
-  expect(checked('String')).toEqual(['Auto'])
+  expect(screen.queryByRole('group', { name: 'String' })).toBeNull()
   expect(screen.getByText('No capo')).toBeInTheDocument()
 })
 
-test('switching to ukulele shows its tunings and strings, resetting the lock', async () => {
+test('switching to ukulele shows its tunings, resetting the lock', async () => {
   saveSettings({ instrument: 'guitar', tuningId: 'guitar-drop-d', lockedString: 'D2', capo: 3 })
   render(<Harness />)
   await userEvent.click(screen.getByRole('radio', { name: 'Ukulele' }))
 
   expect(checked('Tuning')).toEqual(['StandardG C E A'])
   expect(group('Tuning').getAllByRole('radio')).toHaveLength(4)
-  expect(
-    group('String')
-      .getAllByRole('radio')
-      .map((r) => r.closest('label')!.textContent),
-  ).toEqual(['Auto', 'G4', 'C4', 'E4', 'A4'])
-  expect(checked('String')).toEqual(['Auto'])
   expect(screen.getByText('Fret 3')).toBeInTheDocument()
   expect(loadSettings()).toEqual<Settings>({
     instrument: 'ukulele',
@@ -66,16 +60,11 @@ test('switching to ukulele shows its tunings and strings, resetting the lock', a
   })
 })
 
-test('locking a string, then changing tuning, goes back to auto', async () => {
+test('changing tuning drops a locked string back to auto', async () => {
+  saveSettings({ instrument: 'guitar', tuningId: 'guitar-standard', lockedString: 'A2', capo: 0 })
   render(<Harness />)
-  await userEvent.click(screen.getByRole('radio', { name: 'A2' }))
-  expect(checked('String')).toEqual(['A2'])
-  expect(screen.getByText(/Only A2 is measured/)).toBeInTheDocument()
-  expect(loadSettings().lockedString).toBe('A2')
-
   await userEvent.click(screen.getByRole('radio', { name: /Drop D/ }))
-  expect(checked('String')).toEqual(['Auto'])
-  expect(group('String').getByRole('radio', { name: 'D2' })).toBeInTheDocument()
+  expect(loadSettings().lockedString).toBeNull()
 })
 
 test('capo stepper stays within 0–7', async () => {
