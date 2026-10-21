@@ -1,20 +1,47 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { noteToFreq } from '../music/notes'
 import { standardTuning, type TuningString } from '../music/tunings'
 import type { TunerState } from '../state/tunerState'
+import { IN_TUNE_HOLD_MS } from './CentsDisplay'
 import { formatCents } from './formatCents'
 import { TunerScreen } from './TunerScreen'
 
 const E2 = standardTuning('guitar').strings[0]
-const active = (cents: number, inTune = false, settled = false): TunerState => ({
+const active = (cents: number): TunerState => ({
   status: 'active',
   string: E2,
   freq: 82.98,
   cents,
-  inTune,
-  settled,
 })
+const green = (container: HTMLElement) =>
+  container.querySelector('main')!.classList.contains('inTune')
+const wait = (ms: number) => act(() => vi.advanceTimersByTime(ms))
+const fakeTimers = () =>
+  vi.useFakeTimers({
+    toFake: [
+      'setTimeout',
+      'clearTimeout',
+      'setInterval',
+      'clearInterval',
+      'requestAnimationFrame',
+      'cancelAnimationFrame',
+      'performance',
+    ],
+  })
+
+/** The screen with default props, for `rerender`. */
+const screenWith = (state: TunerState) => (
+  <TunerScreen
+    state={state}
+    locked={null}
+    tuning="Standard"
+    capo={0}
+    onStart={() => {}}
+    onOpenSettings={() => {}}
+    onOpenPrivacy={() => {}}
+  />
+)
 
 function renderScreen(
   state: TunerState,
@@ -69,31 +96,78 @@ describe('TunerScreen', () => {
     expect(screen.getByTestId('band')).toHaveClass('flat')
   })
 
+  test('no band while the number reads 0, not even a hairline', () => {
+    renderScreen(active(0.4))
+    expect(screen.getByLabelText('0 cents')).toBeInTheDocument()
+    expect(screen.getByTestId('band').style.getPropertyValue('--band-cents')).toBe('0')
+  })
+
   test('band stops growing at 50 cents; number clamps at 99', () => {
     renderScreen(active(-300))
     expect(screen.getByTestId('band').style.getPropertyValue('--band-cents')).toBe('50')
     expect(screen.getByLabelText('-99 cents flat')).toBeInTheDocument()
   })
 
-  test('in tune: check mark on the mint background, no band or number', () => {
-    const { container } = renderScreen(active(0.3, true, true))
-    expect(screen.getByRole('img', { name: 'In tune' })).toBeInTheDocument()
-    expect(screen.queryByTestId('band')).toBeNull()
-    expect(container.querySelector('main')).toHaveClass('inTune')
-  })
+  describe('in tune', () => {
+    beforeEach(fakeTimers)
+    afterEach(() => vi.useRealTimers())
 
-  test('dead on but not held for 2 s yet: "0" on green, no check', () => {
-    renderScreen(active(0.2, true, false))
-    expect(screen.getByLabelText('0 cents')).toHaveTextContent('0')
-    expect(screen.queryByRole('img', { name: 'In tune' })).toBeNull()
-  })
+    test('green only once the number has shown 0 for a couple of seconds', async () => {
+      const { container } = renderScreen(active(0.2))
+      expect(screen.getByLabelText('0 cents')).toHaveTextContent('0')
+      expect(green(container)).toBe(false)
+      await wait(IN_TUNE_HOLD_MS - 1)
+      expect(green(container)).toBe(false)
+      await wait(1)
+      expect(green(container)).toBe(true)
+      expect(screen.queryByRole('img', { name: 'In tune' })).toBeNull()
+    })
 
-  test('in tune but not dead on: the number stays on the green so you can find 0', () => {
-    const { container } = renderScreen(active(-1.2, true))
-    expect(container.querySelector('main')).toHaveClass('inTune')
-    expect(screen.getByLabelText('-1 cents flat')).toHaveTextContent('-1')
-    expect(screen.getByTestId('band')).toHaveClass('flat')
-    expect(screen.queryByRole('img', { name: 'In tune' })).toBeNull()
+    test('1 cent off never turns green', async () => {
+      const { container } = renderScreen(active(-1.2))
+      await wait(5000)
+      expect(screen.getByLabelText('-1 cents flat')).toBeInTheDocument()
+      expect(green(container)).toBe(false)
+    })
+
+    test('the green goes as soon as the number moves off 0, and the wait starts over', async () => {
+      const { container, rerender } = renderScreen(active(0))
+      await wait(IN_TUNE_HOLD_MS)
+      expect(green(container)).toBe(true)
+      rerender(screenWith(active(3)))
+      await wait(1000)
+      expect(screen.getByLabelText('+3 cents sharp')).toBeInTheDocument()
+      expect(green(container)).toBe(false)
+      rerender(screenWith(active(0)))
+      await wait(1000)
+      expect(screen.getByLabelText('0 cents')).toBeInTheDocument()
+      expect(green(container)).toBe(false)
+      await wait(IN_TUNE_HOLD_MS)
+      expect(green(container)).toBe(true)
+    })
+
+    test('a green reading stays green through silence', async () => {
+      const { status: _status, ...last } = active(0) as Extract<TunerState, { status: 'active' }>
+      const { container } = renderScreen({ status: 'idle', last })
+      await wait(IN_TUNE_HOLD_MS)
+      expect(screen.getByLabelText('0 cents')).toBeInTheDocument()
+      expect(green(container)).toBe(true)
+      expect(screen.getByText('E2')).toBeInTheDocument()
+    })
+
+    test('keeps the theme colour in step with the screen', async () => {
+      const meta = document.createElement('meta')
+      meta.name = 'theme-color'
+      document.head.append(meta)
+      renderScreen(active(0))
+      expect(meta.content).toBe('#F5F6F5')
+      await wait(IN_TUNE_HOLD_MS)
+      expect(meta.content).toBe('#B0E1CA')
+      // Safari colours its bars from the page background, so that must follow too.
+      expect(document.body.style.backgroundColor).toBe('rgb(176, 225, 202)')
+      expect(document.documentElement.style.backgroundColor).toBe('rgb(176, 225, 202)')
+      meta.remove()
+    })
   })
 
   test('idle keeps the last reading frozen on screen', () => {
@@ -105,17 +179,6 @@ describe('TunerScreen', () => {
     expect(screen.getByText('82.41 Hz')).toBeInTheDocument()
   })
 
-  test('after a string is done, the check stays through silence', () => {
-    const { status: _status, ...last } = active(0, true, true) as Extract<
-      TunerState,
-      { status: 'active' }
-    >
-    const { container } = renderScreen({ status: 'idle', last })
-    expect(screen.getByRole('img', { name: 'In tune' })).toBeInTheDocument()
-    expect(container.querySelector('main')).toHaveClass('inTune')
-    expect(screen.getByText('E2')).toBeInTheDocument()
-  })
-
   test('nothing played yet: no note, no frequency', () => {
     renderScreen({ status: 'idle', last: null })
     expect(screen.getByText('— Hz')).toBeInTheDocument()
@@ -123,7 +186,7 @@ describe('TunerScreen', () => {
   })
 
   test('with a capo the target is the capoed pitch', () => {
-    renderScreen(active(0, true), { capo: 2 })
+    renderScreen(active(0), { capo: 2 })
     expect(screen.getByText('E2')).toBeInTheDocument()
     expect(screen.getByText('92.50 Hz')).toBeInTheDocument()
   })
@@ -175,29 +238,5 @@ describe('TunerScreen', () => {
     renderScreen({ status: 'start' })
     expect(screen.queryByText('— Hz')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Settings: Standard' })).toBeNull()
-  })
-
-  test('keeps the theme colour in step with the screen', () => {
-    const meta = document.createElement('meta')
-    meta.name = 'theme-color'
-    document.head.append(meta)
-    const { rerender } = renderScreen(active(12))
-    expect(meta.content).toBe('#F5F6F5')
-    rerender(
-      <TunerScreen
-        state={active(1, true)}
-        locked={null}
-        tuning="Standard"
-        capo={0}
-        onStart={() => {}}
-        onOpenSettings={() => {}}
-        onOpenPrivacy={() => {}}
-      />,
-    )
-    expect(meta.content).toBe('#CFECDE')
-    // Safari colours its bars from the page background, so that must follow too.
-    expect(document.body.style.backgroundColor).toBe('rgb(207, 236, 222)')
-    expect(document.documentElement.style.backgroundColor).toBe('rgb(207, 236, 222)')
-    meta.remove()
   })
 })

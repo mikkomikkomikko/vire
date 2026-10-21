@@ -65,7 +65,6 @@ test('starts on the start screen and only opens audio on start()', async () => {
   expect(result.current.state).toMatchObject({
     status: 'active',
     string: { name: 'A2' },
-    inTune: true,
   })
 })
 
@@ -93,18 +92,14 @@ test('settings changes apply to the running loop', async () => {
   await act(() => result.current.start())
   runFrames(1)
   // Without a capo, F#2 is E2 two semitones sharp.
-  expect(result.current.state).toMatchObject({
-    status: 'active',
-    string: { name: 'E2' },
-    inTune: false,
-  })
+  const cents = () => {
+    const state = result.current.state
+    return state.status === 'active' && state.string.name === 'E2' && Math.round(state.cents) + 0
+  }
+  expect(cents()).toBe(200)
   rerender({ c: { ...config, capo: 2 } })
   runFrames(1)
-  expect(result.current.state).toMatchObject({
-    status: 'active',
-    string: { name: 'E2' },
-    inTune: true,
-  })
+  expect(cents()).toBe(0)
 })
 
 test('pauses while hidden and resumes when visible again', async () => {
