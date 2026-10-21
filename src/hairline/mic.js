@@ -14,12 +14,12 @@ const ZS = 15, RB = 20, ZB = 3, RST = 3;            // stem top, foot radius and
 const FACE = -45, YAW = 55, NEAR = 60;              // the yoke's heading facing the viewer, how far it swivels from it; how far away a voice tips the capsule all the way
 const REST = [30, 22];                              // at rest: the swivel off facing, and the tilt
 const SWING = 20;                                   // a swivel this far off straightens the capsule until the yoke comes round
+const IDLE = [1.5, 4], GLANCE = [1.8, 4];           // on: seconds without a pointer, or with a still one, before it looks around; between glances
 const SLUMP = [15, -150], STIR = 12;                // off: the swivel and the tilt it hangs at, back into the U clear of the arms; how far the yoke stirs toward a voice
 const HEAVY = { k: 40, c: 12 };                     // off: a slow, heavy spring for the yoke, so a stir lags
-// Off, the capsule is a pendulum on loose pivots: it holds for a moment, rocks back over upright,
-// falls into the U behind the yoke's curve, and swings a couple of times, short of straight down
-// so the head never crosses the curve. A spring can't fall like that, so it gets its own step: gravity by the sine of the
-// angle, and a little friction.
+// Off, the capsule is a pendulum on loose pivots: it holds, rocks back over upright, falls into the
+// U and swings a couple of times, short of straight down so the head never crosses the curve. A
+// spring can't fall like that, so it gets its own step: gravity by the sine, and some friction.
 const HOLD = 0.25, G = 32, F = 5.5;                 // seconds before the screws give, gravity (1/s²), friction (1/s)
 const V = [Math.SQRT1_2 * 0.866, Math.SQRT1_2 * 0.866, 0.5];   // toward the camera
 const D = 0.45;                                     // fills sit this far inside the outline, so the stroke shows whole
@@ -48,10 +48,9 @@ function mount({ stage, svg, read }, value, off = false, own = true) {
   put(solid(g), prism(P, front, circ(RB, 40), circ(RB - 1.6, 40), 0, ZB));
   put(solid(g), prism(P, front, circ(RST, 16), circ(RST - 0.8, 16), ZB, ZS + 2));
 
-  // The yoke in two halves, so the near arm can pass in front of the capsule.
-  // Each half is a bent bar: a run of capsules, all stroked, then all filled
-  // again just inside, which leaves only the bar's outline. The fills start a
-  // step past the bottom, over the other half's start, so no seam shows there.
+  // The yoke in two halves, so the near arm can pass in front of the capsule. Each half is a bent
+  // bar: a run of capsules, all stroked, then all filled again just inside, which leaves only the
+  // bar's outline. The fills start a step past the bottom, over the other half's, so no seam shows.
   const TH = []; for (let t = -3.75; t <= 90; t += 3.75) TH.push(rad(t));
   const half = [-1, 1].map(() => {
     const hg = mk("g", {}, g);
@@ -67,24 +66,21 @@ function mount({ stage, svg, read }, value, off = false, own = true) {
   const psi = spring(FACE + home[0], opts);
   // off: the capsule starts where the mic that was on rests, and falls
   const phi = off ? { x: REST[1], v: 0, t: SLUMP[1], hold: HOLD } : spring(REST[1]);
-  let drawn = "", nearSide = 0, want = REST[1];
+  let drawn = "", nearSide = -1, want = REST[1];
 
   /** One step of the pendulum, in small slices so the swing stays true; whether it still moves. */
   function swing(dt) {
     if (reducedMotion()) { phi.x = phi.t; phi.v = 0; phi.hold = 0; return false; }
     if (phi.hold > 0) { phi.hold -= dt; return true; }
-    for (let n = Math.ceil(dt / 0.008), h = dt / n; n > 0; n--) {
-      phi.v += (-G * (180 / Math.PI) * Math.sin(rad(phi.x - phi.t)) - F * phi.v) * h;
-      phi.x += phi.v * h;
-    }
+    for (let n = Math.ceil(dt / 0.008), h = dt / n; n > 0; n--)
+      phi.x += (phi.v += (-G * (180 / Math.PI) * Math.sin(rad(phi.x - phi.t)) - F * phi.v) * h) * h;
     if (Math.abs(phi.x - phi.t) < 0.3 && Math.abs(phi.v) < 1) { phi.x = phi.t; phi.v = 0; return false; }
     return true;
   }
 
   function draw() {
     const key = psi.x.toFixed(2) + "," + phi.x.toFixed(2);
-    if (key === drawn) return;
-    drawn = key;
+    if (key === drawn) return; drawn = key;
     const ps = rad(psi.x), ph = rad(phi.x);
     const ex = [Math.cos(ps), Math.sin(ps), 0], ey = [-Math.sin(ps), Math.cos(ps), 0];
     const a = [ey[0] * Math.sin(ph), ey[1] * Math.sin(ph), Math.cos(ph)];
@@ -123,15 +119,33 @@ function mount({ stage, svg, read }, value, off = false, own = true) {
       else g.append(half[far].hg, stub[far].g, cap.g, stub[near].g, half[near].hg);
     }
   }
-  nearSide = -1;
+
+  // On and idle (no pointer, a phone between touches, or a pointer that has stopped), the mic
+  // looks around by itself: it glances at a voice somewhere around it, now and then back at
+  // rest, a few seconds apart, until the pointer moves again. The clock counts in the frame
+  // loop, so it sleeps offscreen; asked for less motion, it holds still.
+  let gaze = null, gazing = false, idle = 0, next = IDLE[0];
+  function wander(dt) {
+    if (off || reducedMotion()) return false;
+    idle += dt;
+    if (idle >= next) {
+      gazing = true;
+      const a = Math.random() * Math.PI * 2, d = 20 + Math.random() * 70;
+      gaze = Math.random() < 0.25 ? null : [d * Math.cos(a), d * Math.sin(a)];
+      next = idle + GLANCE[0] + Math.random() * (GLANCE[1] - GLANCE[0]);
+      retarget();
+    }
+    return true;
+  }
 
   const B = register(stage, (dt) => {
+    const w = wander(dt);
     // On, a long swivel stands the capsule up first and tips it once the yoke has come round, so
     // the head never points the wrong way on the way.
     if (!off) phi.t = Math.abs(psi.x - psi.t) > SWING ? 0 : want;
     const m = stepS(psi, dt) | (off ? swing(dt) : stepS(phi, dt));
     draw();
-    return !!m;
+    return !!m || w;
   });
   bag.add(B.unregister);
 
@@ -150,37 +164,34 @@ function mount({ stage, svg, read }, value, off = false, own = true) {
       return;
     }
     let turn = REST[0], tilt = Math.min(REST[1], maxT);
-    if (over) {
-      // The yoke turns to face the voice's side, never further than YAW from facing the viewer,
-      // so its U always shows; the way the yoke faces is the way the mic reads as looking. In
-      // front, the capsule tips toward the voice. Going round behind (above, on screen), the yoke
-      // comes back toward facing the viewer and the capsule tips over to lean back, looking up,
-      // all the way back when the voice is straight behind. Both change smoothly, so nothing flips.
-      const rel = wrap((Math.atan2(over[1], over[0]) * 180) / Math.PI - 90 - FACE);
+    const voice = gazing ? gaze : over;
+    if (voice) {
+      // The yoke faces the voice's side, never further than YAW from facing the viewer, so its U
+      // shows; the way it faces is the way the mic reads as looking. In front, the capsule tips
+      // toward the voice. Round behind (above, on screen), the yoke comes back to face the viewer
+      // and the capsule leans back, looking up. Both change smoothly, so nothing ever flips.
+      const rel = wrap((Math.atan2(voice[1], voice[0]) * 180) / Math.PI - 90 - FACE);
       const u = Math.max(0, Math.abs(rel) - 90) / 90;   // 0 side-on, 1 straight behind
       turn = u > 0 ? Math.sign(rel) * YAW * (1 - u) : clamp(rel, -YAW, YAW);
-      tilt = maxT * clamp(Math.hypot(over[0], over[1]) / NEAR, 0, 1) * (1 - 2 * u);
+      tilt = maxT * clamp(Math.hypot(voice[0], voice[1]) / NEAR, 0, 1) * (1 - 2 * u);
     }
     psi.t = FACE + turn;
     want = phi.t = tilt;
-    read.textContent = over ? `aim ${Math.round(turn)}°·${Math.abs(Math.round(tilt))}°` : "rest";
+    read.textContent = over && !gazing ? `aim ${Math.round(turn)}°·${Math.abs(Math.round(tilt))}°` : "rest";
     B.wake();
   }
 
-  const look = (p) => { over = unproj(C, p[0], p[1], ZP); retarget(); };
-  const away = () => { over = null; retarget(); };
+  /** A pointer that moves ends any looking around; idle starts counting again from it. */
+  const still = (wait) => { gaze = null; gazing = false; idle = 0; next = wait; };
+  const look = (p) => { over = unproj(C, p[0], p[1], ZP); still(IDLE[1]); retarget(); };
+  const away = () => { over = null; still(IDLE[0]); retarget(); };
   // `own` false: the host follows the pointer itself and calls look and away
   if (own) bag.add(pointer(stage, { move: look, leave: away }));
   bag.add(() => svg.replaceChildren());
   retarget();
   draw();
 
-  return {
-    set: (v) => { maxT = v; retarget(); },
-    look,
-    away,
-    destroy: bag.dispose,
-  };
+  return { set: (v) => { maxT = v; retarget(); }, look, away, destroy: bag.dispose };
 }
 
 /**
