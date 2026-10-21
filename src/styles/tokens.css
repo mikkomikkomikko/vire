@@ -3,7 +3,7 @@
   --color-bg-in-tune: #B0E1CA;
   --color-ink: #0e1a15;
   --color-ink-muted: #4f5e57;
-  --color-black: #000000;
-  --color-band-light: #434343;
+  --color-black: #f5f6f5;
+  --color-band-light: #cccccc;
   --font-sans: 'Inter Variable', 'Inter', system-ui, sans-serif;
 }
