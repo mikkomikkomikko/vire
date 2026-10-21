@@ -22,6 +22,7 @@ function renderScreen(
 ) {
   const onStart = vi.fn()
   const onOpenSettings = vi.fn()
+  const onOpenPrivacy = vi.fn()
   const view = render(
     <TunerScreen
       state={state}
@@ -30,9 +31,10 @@ function renderScreen(
       capo={capo}
       onStart={onStart}
       onOpenSettings={onOpenSettings}
+      onOpenPrivacy={onOpenPrivacy}
     />,
   )
-  return { ...view, onStart, onOpenSettings }
+  return { ...view, onStart, onOpenSettings, onOpenPrivacy }
 }
 
 describe('formatCents', () => {
@@ -162,11 +164,17 @@ describe('TunerScreen', () => {
     expect(onStart).toHaveBeenCalledOnce()
   })
 
-  test('the settings button stays usable on the start screen', async () => {
-    const { onStart, onOpenSettings } = renderScreen({ status: 'start' })
-    await userEvent.click(screen.getByRole('button', { name: 'Settings: Standard' }))
-    expect(onOpenSettings).toHaveBeenCalledOnce()
+  test('start: the mic explanation opens without starting the mic', async () => {
+    const { onStart, onOpenPrivacy } = renderScreen({ status: 'start' })
+    await userEvent.click(screen.getByRole('button', { name: 'How Vire uses your mic' }))
+    expect(onOpenPrivacy).toHaveBeenCalledOnce()
     expect(onStart).not.toHaveBeenCalled()
+  })
+
+  test('the start screen hides the bottom bar', () => {
+    renderScreen({ status: 'start' })
+    expect(screen.queryByText('— Hz')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Settings: Standard' })).toBeNull()
   })
 
   test('keeps the theme colour in step with the screen', () => {
@@ -183,6 +191,7 @@ describe('TunerScreen', () => {
         capo={0}
         onStart={() => {}}
         onOpenSettings={() => {}}
+        onOpenPrivacy={() => {}}
       />,
     )
     expect(meta.content).toBe('#CFECDE')

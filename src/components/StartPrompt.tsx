@@ -1,13 +1,14 @@
+import { PegFigure } from './PegFigure'
 import styles from './StartPrompt.module.css'
 
 const COPY = {
   start: {
     title: 'Tap to start',
-    body: 'Vire listens through your microphone. Audio never leaves your device.',
+    body: 'Then allow microphone access so Vire can hear your guitar. Audio stays on your device.',
   },
   resume: {
     title: 'Tap to continue',
-    body: 'Your browser paused the microphone. Tap once more to keep tuning.',
+    body: 'Your browser paused the mic. Tap once more to keep tuning.',
   },
   denied: {
     title: 'Microphone unavailable',
@@ -18,15 +19,31 @@ const COPY = {
 export function StartPrompt({
   reason,
   onStart,
+  onPrivacy,
 }: {
   reason: keyof typeof COPY
   onStart: () => void
+  onPrivacy: () => void
 }) {
   const { title, body } = COPY[reason]
   return (
-    <button type="button" className={styles.prompt} onClick={onStart}>
-      <span className={styles.title}>{title}</span>
-      <span className={styles.body}>{body}</span>
-    </button>
+    <>
+      <button type="button" className={styles.prompt} onClick={onStart}>
+        <PegFigure className={styles.figure} />
+        <span className={styles.title}>{title}</span>
+        <span className={styles.body}>
+          {/* One sentence a line, as long as the screen allows */}
+          {body.split(/(?<=\.) /).map((sentence) => (
+            <span key={sentence} className={styles.sentence}>
+              {sentence}{' '}
+            </span>
+          ))}
+        </span>
+      </button>
+      {/* A sibling, not inside the prompt, so reading about the mic doesn't start it. */}
+      <button type="button" className={styles.privacy} onClick={onPrivacy}>
+        How Vire uses your mic
+      </button>
+    </>
   )
 }
