@@ -1,4 +1,4 @@
-import { PegFigure } from './PegFigure'
+import { MicFigure } from './MicFigure'
 import styles from './StartPrompt.module.css'
 
 const COPY = {
@@ -29,7 +29,7 @@ export function StartPrompt({
   return (
     <>
       <button type="button" className={styles.prompt} onClick={onStart}>
-        <PegFigure className={styles.figure} />
+        <MicFigure className={styles.figure} />
         <span className={styles.title}>{title}</span>
         <span className={styles.body}>
           {/* One sentence a line, as long as the screen allows */}

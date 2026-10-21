@@ -44,13 +44,12 @@
   line-height: 22px;
 }
 
-/* The peg, large and cropped off the bottom right; the text sits over it. Sized in px so it keeps
-   the same crop on any width, anchored to the bottom so taller screens only add space above it. */
+/* The mic, above the heading. Its viewBox has room around the drawing for the head to swing into,
+   so it gives some of that back to the gap. */
 .figure {
-  position: absolute;
-  width: 1252px;
-  left: calc(50% - 601px);
-  bottom: -208px;
+  width: 280px;
+  max-width: 100%;
+  margin: -24px 0 -20px;
 }
 
 .sentence {
@@ -66,8 +65,7 @@
   padding: 12px 16px;
   border: 0;
   border-radius: 999px;
-  /* Masks the peg's lines behind the words */
-  background: var(--color-bg);
+  background: none;
   color: var(--color-ink-muted);
   font-family: inherit;
   font-size: 15px;
