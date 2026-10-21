@@ -5,7 +5,6 @@ import {
   MAX_CAPO,
   withCapo,
   withInstrument,
-  withLockedString,
   withTuning,
   type Settings,
 } from '../state/settings'
@@ -96,29 +95,6 @@ export function SettingsSheet({ open, settings, onChange, onClose }: Props) {
               </label>
             ))}
           </div>
-        </fieldset>
-
-        <fieldset className={styles.section}>
-          <legend className={styles.legend}>String</legend>
-          <div className={styles.chips}>
-            {[null, ...tuning.strings.map((s) => s.name)].map((name) => (
-              <label key={name ?? 'auto'} className={styles.chip}>
-                <input
-                  type="radio"
-                  name="string"
-                  className={styles.radio}
-                  checked={settings.lockedString === name}
-                  onChange={() => onChange((s) => withLockedString(s, name))}
-                />
-                {name ?? 'Auto'}
-              </label>
-            ))}
-          </div>
-          <p className={styles.hint}>
-            {settings.lockedString
-              ? `Only ${settings.lockedString} is measured. Handy in noisy rooms and with new strings.`
-              : 'Detects the string you play.'}
-          </p>
         </fieldset>
 
         <fieldset className={styles.section}>

@@ -7,7 +7,7 @@ import { SettingsSheet } from './components/SettingsSheet'
 import { TunerScreen } from './components/TunerScreen'
 import { mockState } from './dev/mockState'
 import { openTone } from './dev/tone'
-import { currentTuning, lockedTuningString, tuningName } from './state/settings'
+import { currentTuning, lockedTuningString, tuningName, withLockedString } from './state/settings'
 import { useSettings } from './state/useSettings'
 import { useTuner } from './state/useTuner'
 
@@ -30,9 +30,11 @@ export function App() {
     <>
       <TunerScreen
         state={mock ?? state}
+        strings={currentTuning(settings).strings}
         locked={lockedTuningString(settings)}
         tuning={tuningName(settings)}
         capo={settings.capo}
+        onLock={(name) => updateSettings((s) => withLockedString(s, name))}
         onStart={() => void start()}
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenPrivacy={() => setPrivacyOpen(true)}

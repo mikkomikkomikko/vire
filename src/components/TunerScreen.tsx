@@ -1,4 +1,3 @@
-import { soundingFreq } from '../music/target'
 import type { TuningString } from '../music/tunings'
 import type { TunerState } from '../state/tunerState'
 import { BottomBar } from './BottomBar'
@@ -14,22 +13,30 @@ const BG_IN_TUNE = '#CFECDE'
 
 type Props = {
   state: TunerState
+  strings: readonly TuningString[]
   locked: TuningString | null
   tuning: string
   capo: number
+  onLock: (name: string | null) => void
   onStart: () => void
   onOpenSettings: () => void
   onOpenPrivacy: () => void
 }
 
-export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettings, onOpenPrivacy }: Props) {
+export function TunerScreen({
+  state,
+  strings,
+  locked,
+  tuning,
+  capo,
+  onLock,
+  onStart,
+  onOpenSettings,
+  onOpenPrivacy,
+}: Props) {
   // While idle, the last reading stays frozen on screen until the next note.
   const reading = state.status === 'active' ? state : state.status === 'idle' ? state.last : null
   const green = !!reading && (reading.inTune || reading.settled)
-  // A locked string is always the target, so show it even before anything is played.
-  const target = reading?.string ?? locked
-  // The pitch to tune to (capo included); the measured pitch is already shown as cents.
-  const targetFreq = target ? soundingFreq(target, capo) : null
   useThemeColor(green ? BG_IN_TUNE : BG)
   const prompt = state.status === 'start' || state.status === 'denied'
 
@@ -49,15 +56,15 @@ export function TunerScreen({ state, locked, tuning, capo, onStart, onOpenSettin
       {state.status === 'denied' && (
         <StartPrompt reason="denied" onStart={onStart} onPrivacy={onOpenPrivacy} />
       )}
-      {/* The prompt has the screen to itself; the note and tuning come back once it's gone. */}
+      {/* The prompt has the screen to itself; the strings and tuning come back once it's gone. */}
       {!prompt && (
         <BottomBar
-          note={target?.name ?? null}
-          freq={targetFreq}
-          locked={locked !== null}
+          strings={strings}
+          locked={locked?.name ?? null}
+          detected={reading?.string.name ?? null}
           tuning={tuning}
           capo={capo}
-          dimmed={!reading}
+          onLock={onLock}
           onOpenSettings={onOpenSettings}
         />
       )}

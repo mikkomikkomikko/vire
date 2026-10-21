@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { noteToFreq } from '../music/notes'
 import { standardTuning, type TuningString } from '../music/tunings'
@@ -6,7 +6,8 @@ import type { TunerState } from '../state/tunerState'
 import { formatCents } from './formatCents'
 import { TunerScreen } from './TunerScreen'
 
-const E2 = standardTuning('guitar').strings[0]
+const STRINGS = standardTuning('guitar').strings
+const E2 = STRINGS[0]
 const active = (cents: number, inTune = false, settled = false): TunerState => ({
   status: 'active',
   string: E2,
@@ -21,20 +22,23 @@ function renderScreen(
   { locked = null as TuningString | null, tuning = 'Standard', capo = 0 } = {},
 ) {
   const onStart = vi.fn()
+  const onLock = vi.fn()
   const onOpenSettings = vi.fn()
   const onOpenPrivacy = vi.fn()
   const view = render(
     <TunerScreen
       state={state}
+      strings={STRINGS}
       locked={locked}
       tuning={tuning}
       capo={capo}
+      onLock={onLock}
       onStart={onStart}
       onOpenSettings={onOpenSettings}
       onOpenPrivacy={onOpenPrivacy}
     />,
   )
-  return { ...view, onStart, onOpenSettings, onOpenPrivacy }
+  return { ...view, onStart, onLock, onOpenSettings, onOpenPrivacy }
 }
 
 describe('formatCents', () => {
@@ -50,16 +54,18 @@ describe('formatCents', () => {
   })
 })
 
+const strings = () => within(screen.getByRole('group', { name: 'String' }))
+const chip = (name: string) => strings().getByRole('radio', { name }).closest('label')!
+
 describe('TunerScreen', () => {
-  test('sharp: number, upward band, note and frequency', () => {
+  test('sharp: number, upward band, heard string marked', () => {
     const { container } = renderScreen(active(12))
     expect(screen.getByLabelText('+12 cents sharp')).toHaveTextContent('+12')
     const band = screen.getByTestId('band')
     expect(band).toHaveClass('sharp')
     expect(band.style.getPropertyValue('--band-cents')).toBe('12')
-    expect(screen.getByText('E2')).toBeInTheDocument()
-    // The target pitch, not the measured 82.98 Hz: the cents already say how far off you are.
-    expect(screen.getByText('82.41 Hz')).toBeInTheDocument()
+    expect(chip('E2')).toHaveClass('detected')
+    expect(strings().getByRole('radio', { name: 'Auto' })).toBeChecked()
     expect(container.querySelector('main')).not.toHaveClass('inTune')
   })
 
@@ -101,8 +107,7 @@ describe('TunerScreen', () => {
     renderScreen({ status: 'idle', last })
     expect(screen.getByLabelText('+7 cents sharp')).toBeInTheDocument()
     expect(screen.getByTestId('band')).toHaveClass('sharp')
-    expect(screen.getByText('E2')).toBeInTheDocument()
-    expect(screen.getByText('82.41 Hz')).toBeInTheDocument()
+    expect(chip('E2')).toHaveClass('detected')
   })
 
   test('after a string is done, the check stays through silence', () => {
@@ -113,32 +118,35 @@ describe('TunerScreen', () => {
     const { container } = renderScreen({ status: 'idle', last })
     expect(screen.getByRole('img', { name: 'In tune' })).toBeInTheDocument()
     expect(container.querySelector('main')).toHaveClass('inTune')
-    expect(screen.getByText('E2')).toBeInTheDocument()
+    expect(chip('E2')).toHaveClass('detected')
   })
 
-  test('nothing played yet: no note, no frequency', () => {
+  test('nothing played yet: Auto chosen, no string marked', () => {
     renderScreen({ status: 'idle', last: null })
-    expect(screen.getByText('— Hz')).toBeInTheDocument()
+    expect(
+      strings()
+        .getAllByRole('radio')
+        .map((r) => r.closest('label')!.textContent),
+    ).toEqual(['Auto', 'E2', 'A2', 'D3', 'G3', 'B3', 'E4'])
+    expect(strings().getByRole('radio', { name: 'Auto' })).toBeChecked()
+    expect(screen.getByRole('group', { name: 'String' }).querySelector('.detected')).toBeNull()
     expect(screen.queryByTestId('band')).toBeNull()
   })
 
-  test('with a capo the target is the capoed pitch', () => {
-    renderScreen(active(0, true), { capo: 2 })
-    expect(screen.getByText('E2')).toBeInTheDocument()
-    expect(screen.getByText('92.50 Hz')).toBeInTheDocument()
+  test('locked: the chosen string is checked and nothing else is marked', () => {
+    renderScreen(active(3), { locked: STRINGS[2] })
+    expect(strings().getByRole('radio', { name: 'D3' })).toBeChecked()
+    expect(chip('E2')).not.toHaveClass('detected')
   })
 
-  test('locked: lock glyph, and the locked string shows even before playing', () => {
-    const D3 = standardTuning('guitar').strings[2]
-    renderScreen({ status: 'idle', last: null }, { locked: D3 })
-    expect(screen.getByText('D3')).toBeInTheDocument()
-    expect(screen.getByText('146.83 Hz')).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'Locked' })).toBeInTheDocument()
-  })
-
-  test('auto mode has no lock glyph', () => {
-    renderScreen(active(12))
-    expect(screen.queryByRole('img', { name: 'Locked' })).toBeNull()
+  test('tapping a string locks it, tapping Auto unlocks', async () => {
+    const { onLock, unmount } = renderScreen(active(12))
+    await userEvent.click(strings().getByRole('radio', { name: 'A2' }))
+    expect(onLock).toHaveBeenLastCalledWith('A2')
+    unmount()
+    const locked = renderScreen(active(12), { locked: STRINGS[1] })
+    await userEvent.click(strings().getByRole('radio', { name: 'Auto' }))
+    expect(locked.onLock).toHaveBeenLastCalledWith(null)
   })
 
   test('the tuning label is a button that opens settings', async () => {
@@ -173,7 +181,7 @@ describe('TunerScreen', () => {
 
   test('the start screen hides the bottom bar', () => {
     renderScreen({ status: 'start' })
-    expect(screen.queryByText('— Hz')).toBeNull()
+    expect(screen.queryByRole('group', { name: 'String' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Settings: Standard' })).toBeNull()
   })
 
@@ -186,9 +194,11 @@ describe('TunerScreen', () => {
     rerender(
       <TunerScreen
         state={active(1, true)}
+        strings={STRINGS}
         locked={null}
         tuning="Standard"
         capo={0}
+        onLock={() => {}}
         onStart={() => {}}
         onOpenSettings={() => {}}
         onOpenPrivacy={() => {}}
