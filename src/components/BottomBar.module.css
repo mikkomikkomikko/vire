@@ -58,7 +58,8 @@
     background-color 160ms ease-out,
     color 160ms ease-out,
     box-shadow 160ms ease-out,
-    transform 160ms ease-out;
+    transform 160ms ease-out,
+    scale 160ms var(--ease-out);
   transform-origin: 50% 100%;
 }
 
@@ -77,9 +78,19 @@
   outline-offset: 2px;
 }
 
+/*
+ * A press gives a little; `scale` multiplies with the swell's inline transform. Under reduced
+ * motion chips neither swell nor shrink, and only their colours change.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .chip:active {
+    scale: 0.97;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chip {
     transform: none !important;
-    transition: none;
+    transition-property: background-color, color, box-shadow;
   }
 }

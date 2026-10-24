@@ -4,6 +4,7 @@ import { noteToFreq } from '../music/notes'
 import { standardTuning, type TuningString } from '../music/tunings'
 import type { TunerState } from '../state/tunerState'
 import { IN_TUNE_HOLD_MS } from './CentsDisplay'
+import { MORPH_MS } from './StringLetter'
 import { formatCents } from './formatCents'
 import { TunerScreen } from './TunerScreen'
 
@@ -122,6 +123,38 @@ describe('TunerScreen', () => {
     renderScreen({ status: 'active', string: { name: 'F#3', freq: 185 }, freq: 185, cents: 0 })
     expect(letter()).toHaveTextContent('F#')
     expect(letter()).not.toHaveTextContent('3')
+  })
+
+  describe('letter morph', () => {
+    beforeEach(fakeTimers)
+    afterEach(() => vi.useRealTimers())
+    const on = (name: string): TunerState => ({
+      status: 'active',
+      string: STRINGS.find((s) => s.name === name)!,
+      freq: 100,
+      cents: 0,
+    })
+    const glyphs = () =>
+      [...letter().querySelectorAll('text')].map((t) => ({
+        name: t.textContent,
+        opacity: Number(t.getAttribute('opacity')),
+      }))
+
+    test('a new string interrupting a melt carries on from it instead of snapping back', async () => {
+      const { rerender } = renderScreen(on('E2'))
+      rerender(screenWith(on('A2')))
+      await wait(MORPH_MS * 0.4)
+      const fading = glyphs()[0]
+      expect(fading).toMatchObject({ name: 'E' })
+      expect(fading.opacity).toBeLessThan(1)
+      rerender(screenWith(on('D3')))
+      await wait(16)
+      const [from, to] = glyphs()
+      expect([from.name, to.name]).toEqual(['E', 'D'])
+      expect(from.opacity).toBeCloseTo(fading.opacity, 1)
+      await wait(MORPH_MS)
+      expect(glyphs()).toEqual([{ name: 'D', opacity: 1 }])
+    })
   })
 
   describe('in tune', () => {

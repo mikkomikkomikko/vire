@@ -49,6 +49,13 @@
   color: var(--color-ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition: scale 160ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu:active {
+    scale: 0.95;
+  }
 }
 
 .menu svg {

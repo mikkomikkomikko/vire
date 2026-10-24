@@ -8,7 +8,7 @@
   color: var(--cents-ink, #ffffff);
   mix-blend-mode: difference;
   /* Same fade as the background, so the ink keeps matching it and the digits stay black. */
-  transition: color 600ms ease-in-out;
+  transition: color var(--tint-fade);
   font-size: min(169px, 44vw);
   font-weight: 300;
   line-height: 1.207;
@@ -19,10 +19,4 @@
 /* Still sets the size and holds the text; the shader's canvas draws the visible digits. */
 .under {
   color: transparent;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .number {
-    transition: none;
-  }
 }
