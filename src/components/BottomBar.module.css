@@ -38,6 +38,8 @@
   pointer-events: none;
 }
 
+/* BottomBar swells chips with an inline transform only, so it never touches layout;
+   growing from the bottom edge keeps the row's baseline put. */
 .chip {
   position: relative;
   display: flex;
@@ -55,7 +57,9 @@
   transition:
     background-color 160ms ease-out,
     color 160ms ease-out,
-    box-shadow 160ms ease-out;
+    box-shadow 160ms ease-out,
+    transform 160ms ease-out;
+  transform-origin: 50% 100%;
 }
 
 /* In auto, the string being heard gets a ring; the filled chip is always the chosen mode. */
@@ -75,6 +79,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .chip {
+    transform: none !important;
     transition: none;
   }
 }
