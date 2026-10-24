@@ -100,7 +100,7 @@ String lists are in physical order (ukulele G4 first even though it is higher th
   - Flat: the band grows **downward** from the centre line, `linear-gradient(180deg, #000000, #434343)`.
 - **Number:** sign + integer (`+12`, `-6`), Inter Bold 169px / 204px line-height, white, `mix-blend-mode: difference`, centred on the viewport. It shows black on the light background and white over the band. Values beyond ±99 display as `+99` / `-99`. Use Inter's default proportional digits as in the design (tabular figures give the "1" a foot), but centre each one in a fixed 0.646em cell (Inter's tabular width) and the sign in a 0.679em cell, so the number doesn't shift as it counts or flips sign. Lift the sign by ~12 px (0.071em) as Paper does. No band while the number reads 0.
 - **In tune:** the mint background, with the number and band still shown (no check mark).
-- Motion: the band and number take a new value twice a second (the median of that half second's readings) and glide to it over the next half second, so a wavering string reads as one value drifting. The background colour fades over 600 ms ease-in-out, both into and out of mint. Under `prefers-reduced-motion` both jump instead.
+- Motion: the band and number move like an analog meter's needle: a damped spring (0.45 s response, 0.75 damping) pulled towards every reading, so they answer at once, ride over a wavering string, and settle with a slight overshoot. The background colour fades over 600 ms ease-in-out, both into and out of mint. Under `prefers-reduced-motion` the spring is critically damped (no overshoot) and the background colour jumps.
 
 ### F9. Layout & platform
 

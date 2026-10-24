@@ -1,8 +1,8 @@
 import { useEffect, type CSSProperties } from 'react'
 import styles from './CentsDisplay.module.css'
-import { formatCents, MAX_BAND_CENTS } from './formatCents'
-import { useGlide } from './useGlide'
+import { formatCents, MAX_BAND_CENTS, MAX_DISPLAY_CENTS } from './formatCents'
 import { useHeld } from './useHeld'
+import { useSpring } from './useSpring'
 
 /** How long the number must show 0 before the screen turns green. */
 export const IN_TUNE_HOLD_MS = 2000
@@ -14,10 +14,10 @@ type Props = {
 }
 
 export function CentsDisplay({ cents, onInTune }: Props) {
-  // A new value twice a second, glided to over the next half second, so a wavering string reads
-  // as one value drifting. A full second felt laggy when turning a peg quickly. The band and
-  // number share it; the band passes through 0 to change side.
-  const shown = useGlide(cents, 500)
+  // Moves like an analog meter's needle: every reading pulls it, so turning a peg shows at once,
+  // while its inertia rides over a wavering string. The band and number share it; the band
+  // passes through 0 to change side. The end stop keeps a wild reading from flinging it.
+  const shown = useSpring(Math.max(-MAX_DISPLAY_CENTS, Math.min(MAX_DISPLAY_CENTS, cents)))
   const { sign, value } = formatCents(shown)
   const direction = shown > 0 ? 'sharp' : 'flat'
   const label = value === '0' ? '0 cents' : `${sign}${value} cents ${direction}`
