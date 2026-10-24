@@ -1,7 +1,7 @@
 .sheet {
-  --sheet-surface: #ffffff;
-  --sheet-fill: #eceeed;
-  --sheet-line: #e2e5e3;
+  --sheet-surface: var(--color-paper-white);
+  --sheet-fill: #efebe1;
+  --sheet-line: #e6e1d5;
   --sheet-ease: cubic-bezier(0.32, 0.72, 0, 1);
 
   position: fixed;
@@ -15,7 +15,7 @@
   border-radius: 24px 24px 0 0;
   background: var(--sheet-surface);
   color: var(--color-ink);
-  font-family: var(--font-sans);
+  font-family: var(--font-ui);
   overflow: hidden;
   translate: 0 100%;
   transition:
@@ -35,7 +35,7 @@
 }
 
 .sheet::backdrop {
-  background: rgb(14 26 21 / 0.28);
+  background: rgb(34 32 25 / 0.28);
   opacity: 0;
   transition:
     opacity 280ms ease-out,
@@ -177,7 +177,7 @@
 .segment:has(:checked) {
   background: var(--sheet-surface);
   color: var(--color-ink);
-  box-shadow: 0 1px 2px rgb(14 26 21 / 0.12);
+  box-shadow: 0 1px 2px rgb(34 32 25 / 0.12);
 }
 
 .list {
@@ -254,7 +254,7 @@
 }
 
 .step:disabled {
-  color: rgb(79 94 87 / 0.35);
+  color: rgb(102 98 90 / 0.35);
   cursor: default;
 }
 
@@ -276,7 +276,7 @@
 @media (hover: hover) {
   .done:hover,
   .step:not(:disabled):hover {
-    background: rgb(14 26 21 / 0.06);
+    background: rgb(34 32 25 / 0.06);
   }
 }
 

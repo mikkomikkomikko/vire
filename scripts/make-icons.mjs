@@ -1,10 +1,10 @@
-// Renders the app icon (black check on mint, same geometry as public/icon.svg) to PNGs.
+// Renders the app icon (ink check on moon grey, same geometry as public/icon.svg) to PNGs.
 // No dependencies: distance-field rasterizer + node:zlib PNG encoder. Run: node scripts/make-icons.mjs
 import { writeFileSync } from 'node:fs'
 import { deflateSync } from 'node:zlib'
 
-const BG = [0xcf, 0xec, 0xde]
-const INK = [0, 0, 0]
+const BG = [0xde, 0xd8, 0xca]
+const INK = [0x22, 0x20, 0x19]
 // Check mark in the 1024 icon space: path points transformed by translate(267 274) scale(3.6).
 const POINTS = [
   [18, 70],

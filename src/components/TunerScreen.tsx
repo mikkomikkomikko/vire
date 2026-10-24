@@ -9,8 +9,8 @@ import styles from './TunerScreen.module.css'
 import { useThemeColor } from './useThemeColor'
 
 // Same values as --color-bg / --color-bg-in-tune in tokens.css.
-const BG = '#F5F6F5'
-const BG_IN_TUNE = '#B0E1CA'
+const BG = '#F8F5EE'
+const BG_IN_TUNE = '#D3CCBC'
 
 type Props = {
   state: TunerState
@@ -39,15 +39,17 @@ export function TunerScreen({
   const reading = state.status === 'active' ? state : state.status === 'idle' ? state.last : null
   // Set by the number once it has shown 0 for a couple of seconds.
   const [inTune, setInTune] = useState(false)
-  const green = !!reading && inTune
-  useThemeColor(green ? BG_IN_TUNE : BG)
+  const tuned = !!reading && inTune
+  useThemeColor(tuned ? BG_IN_TUNE : BG)
   const prompt = state.status === 'start' || state.status === 'denied'
 
   return (
-    <main className={`${styles.screen} ${green ? styles.inTune : ''}`}>
+    <main className={`${styles.screen} ${tuned ? styles.inTune : ''}`}>
       <div className={styles.centre}>
-        {/* In tune is shown by the green background alone; the number and band stay on it. */}
-        {reading && <CentsDisplay cents={reading.cents} onInTune={setInTune} />}
+        {/* In tune is shown by the grey background alone; the number and letter stay on it. */}
+        {reading && (
+          <CentsDisplay cents={reading.cents} note={reading.string.name} onInTune={setInTune} />
+        )}
       </div>
       {state.status === 'start' && (
         <StartPrompt

@@ -87,33 +87,41 @@ const strings = () => within(screen.getByRole('group', { name: 'String' }))
 const chip = (name: string) => strings().getByRole('radio', { name }).closest('label')!
 
 describe('TunerScreen', () => {
-  test('sharp: number, upward band, heard string marked', () => {
+  const letter = () => screen.getByTestId('letter')
+  const blur = () => Number(letter().style.getPropertyValue('--letter-blur'))
+
+  test('sharp: number, string letter, heard string marked', () => {
     const { container } = renderScreen(active(12))
     expect(screen.getByLabelText('+12 cents sharp')).toHaveTextContent('+12')
-    const band = screen.getByTestId('band')
-    expect(band).toHaveClass('sharp')
-    expect(band.style.getPropertyValue('--band-cents')).toBe('12')
+    expect(letter()).toHaveTextContent('E')
+    expect(blur()).toBeCloseTo(Math.sqrt(12 / 50), 3)
     expect(chip('E2')).toHaveClass('detected')
     expect(strings().getByRole('radio', { name: 'Auto' })).toBeChecked()
     expect(container.querySelector('main')).not.toHaveClass('inTune')
   })
 
-  test('flat: downward band', () => {
-    renderScreen(active(-6))
-    expect(screen.getByLabelText('-6 cents flat')).toHaveTextContent('-6')
-    expect(screen.getByTestId('band')).toHaveClass('flat')
+  test('flat blurs the letter the same as sharp', () => {
+    renderScreen(active(-12))
+    expect(screen.getByLabelText('-12 cents flat')).toHaveTextContent('-12')
+    expect(blur()).toBeCloseTo(Math.sqrt(12 / 50), 3)
   })
 
-  test('no band while the number reads 0, not even a hairline', () => {
+  test('the letter is sharp as soon as the number reads 0', () => {
     renderScreen(active(0.4))
     expect(screen.getByLabelText('0 cents')).toBeInTheDocument()
-    expect(screen.getByTestId('band').style.getPropertyValue('--band-cents')).toBe('0')
+    expect(blur()).toBe(0)
   })
 
-  test('band stops growing at 50 cents; number clamps at 99', () => {
+  test('the letter is blurriest from 50 cents; number clamps at 99', () => {
     renderScreen(active(-300))
-    expect(screen.getByTestId('band').style.getPropertyValue('--band-cents')).toBe('50')
+    expect(blur()).toBe(1)
     expect(screen.getByLabelText('-99 cents flat')).toBeInTheDocument()
+  })
+
+  test('the letter drops the octave and keeps the accidental', () => {
+    renderScreen({ status: 'active', string: { name: 'F#3', freq: 185 }, freq: 185, cents: 0 })
+    expect(letter()).toHaveTextContent('F#')
+    expect(letter()).not.toHaveTextContent('3')
   })
 
   describe('in tune', () => {
@@ -168,12 +176,12 @@ describe('TunerScreen', () => {
       meta.name = 'theme-color'
       document.head.append(meta)
       renderScreen(active(0))
-      expect(meta.content).toBe('#F5F6F5')
+      expect(meta.content).toBe('#F8F5EE')
       await wait(IN_TUNE_HOLD_MS)
-      expect(meta.content).toBe('#B0E1CA')
+      expect(meta.content).toBe('#D3CCBC')
       // Safari colours its bars from the page background, so that must follow too.
-      expect(document.body.style.backgroundColor).toBe('rgb(176, 225, 202)')
-      expect(document.documentElement.style.backgroundColor).toBe('rgb(176, 225, 202)')
+      expect(document.body.style.backgroundColor).toBe('rgb(211, 204, 188)')
+      expect(document.documentElement.style.backgroundColor).toBe('rgb(211, 204, 188)')
       meta.remove()
     })
   })
@@ -182,7 +190,7 @@ describe('TunerScreen', () => {
     const { status: _status, ...last } = active(7) as Extract<TunerState, { status: 'active' }>
     renderScreen({ status: 'idle', last })
     expect(screen.getByLabelText('+7 cents sharp')).toBeInTheDocument()
-    expect(screen.getByTestId('band')).toHaveClass('sharp')
+    expect(screen.getByTestId('letter')).toHaveTextContent('E')
     expect(chip('E2')).toHaveClass('detected')
   })
 
@@ -195,7 +203,7 @@ describe('TunerScreen', () => {
     ).toEqual(['Auto', 'E2', 'A2', 'D3', 'G3', 'B3', 'E4'])
     expect(strings().getByRole('radio', { name: 'Auto' })).toBeChecked()
     expect(screen.getByRole('group', { name: 'String' }).querySelector('.detected')).toBeNull()
-    expect(screen.queryByTestId('band')).toBeNull()
+    expect(screen.queryByTestId('letter')).toBeNull()
   })
 
   test('locked: the chosen string is checked and nothing else is marked', () => {

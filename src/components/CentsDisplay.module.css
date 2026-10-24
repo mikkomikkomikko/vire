@@ -1,28 +1,3 @@
-/*
- * From the Paper artboards: 7.2 px of band per cent on an 844 px tall screen. The band never
- * grows into the bottom row (40 px strings + 56 px padding + 24 px gap), so the string chips
- * stay legible. The same cap keeps a sharp band clear of the tuning label at the top.
- */
-.band {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: min(
-    calc(var(--band-cents) * 100dvh * 7.2 / 844),
-    calc(50dvh - 120px - env(safe-area-inset-bottom))
-  );
-}
-
-.sharp {
-  bottom: 50%;
-  background: linear-gradient(180deg, var(--color-band-light), var(--color-black));
-}
-
-.flat {
-  top: 50%;
-  background: linear-gradient(180deg, var(--color-black), var(--color-band-light));
-}
-
 .number {
   position: absolute;
   left: 50%;
@@ -35,31 +10,10 @@
   /* Same fade as the background, so the ink keeps matching it and the digits stay black. */
   transition: color 600ms ease-in-out;
   font-size: min(169px, 44vw);
-  font-weight: 700;
+  font-weight: 300;
   line-height: 1.207;
   white-space: nowrap;
   user-select: none;
-}
-
-/*
- * Evenly spaced digits without `tabular-nums`: Inter's tabular "1" grows a foot that the design
- * doesn't have (no stylistic set removes it), so each proportional digit is centred in a cell as
- * wide as Inter's tabular figures (0.646em).
- */
-.digit {
-  display: inline-block;
-  width: 0.646em;
-  text-align: center;
-}
-
-.sign {
-  /* As wide as "+", so switching between + and - doesn't move the digits. */
-  display: inline-block;
-  width: 0.679em;
-  text-align: center;
-  /* Paper sets the sign in a taller, top-aligned box, which lifts it ~12 px above the digits. */
-  position: relative;
-  top: -0.071em;
 }
 
 @media (prefers-reduced-motion: reduce) {

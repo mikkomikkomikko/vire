@@ -1,4 +1,5 @@
-import '@fontsource-variable/inter'
+import '@fontsource-variable/geist-mono'
+import '@fontsource/moirai-one'
 import './styles/tokens.css'
 import './styles/global.css'
 import { StrictMode } from 'react'
