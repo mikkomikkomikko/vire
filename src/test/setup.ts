@@ -18,3 +18,6 @@ globalThis.ResizeObserver ??= class {
   unobserve() {}
   disconnect() {}
 }
+
+// jsdom has no canvas; the cents number falls back to plain digits, as without WebGL.
+HTMLCanvasElement.prototype.getContext = () => null

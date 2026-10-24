@@ -21,3 +21,20 @@
   will-change: filter;
   user-select: none;
 }
+
+/* Laid out but not painted: the shader's canvas draws the letter. */
+.under {
+  visibility: hidden;
+}
+
+/* Covers the whole centre, so the spray isn't cut off at the letter's box. */
+.spray {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--color-letter);
+  /* Darkens whatever is behind it, so it takes on the moon grey when in tune. */
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}

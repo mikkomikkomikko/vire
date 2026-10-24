@@ -4,6 +4,7 @@ import { diagnostics } from './audio/diagnostics'
 import { PrivacySheet } from './components/PrivacySheet'
 import { DebugOverlay } from './components/DebugOverlay'
 import { SettingsSheet } from './components/SettingsSheet'
+import { SprayTweaks } from './components/SprayTweaks'
 import { TunerScreen } from './components/TunerScreen'
 import { mockState } from './dev/mockState'
 import { openTone } from './dev/tone'
@@ -11,10 +12,12 @@ import { currentTuning, lockedTuningString, tuningName, withLockedString } from 
 import { useSettings } from './state/useSettings'
 import { useTuner } from './state/useTuner'
 
-// Dev only: `?mock=sharp` fixes the screen state; `?tone=82.41` replaces the mic with a test tone.
+// Dev only: `?mock=sharp` fixes the screen state; `?tone=82.41` replaces the mic with a test tone;
+// `?tweak` shows live sliders for the cents number's spray shader.
 const params = new URLSearchParams(window.location.search)
 const mock = import.meta.env.DEV ? mockState(window.location.search) : null
 const tone = import.meta.env.DEV ? Number(params.get('tone')) : 0
+const tweak = import.meta.env.DEV && params.has('tweak')
 const openInput = tone > 0 ? () => openTone(tone) : openMic
 
 export function App() {
@@ -47,6 +50,7 @@ export function App() {
       />
       <PrivacySheet open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
       {diagnostics.enabled && <DebugOverlay />}
+      {tweak && <SprayTweaks />}
       {tone > 0 && <div className="dev-badge">Test tone {tone} Hz · not the mic</div>}
     </>
   )

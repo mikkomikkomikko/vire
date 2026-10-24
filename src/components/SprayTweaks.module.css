@@ -1,0 +1,53 @@
+.panel {
+  position: fixed;
+  top: max(8px, env(safe-area-inset-top));
+  right: 8px;
+  z-index: 10;
+  width: min(300px, calc(100vw - 16px));
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: rgb(0 0 0 / 0.8);
+  color: #ffffff;
+  font:
+    11px/15px ui-monospace,
+    'SF Mono',
+    Menlo,
+    monospace;
+}
+
+.header {
+  display: flex;
+  gap: 8px;
+}
+
+.header button {
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.header button:first-child {
+  margin-right: auto;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 96px 40px;
+  align-items: center;
+  gap: 6px;
+}
+
+.row span {
+  opacity: 0.7;
+}
+
+.row input {
+  width: 100%;
+}
+
+.row output {
+  text-align: right;
+}

@@ -16,6 +16,11 @@
   user-select: none;
 }
 
+/* Still sets the size and holds the text; the shader's canvas draws the visible digits. */
+.under {
+  color: transparent;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .number {
     transition: none;
