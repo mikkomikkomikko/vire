@@ -1,0 +1,8 @@
+/* Overhangs the digits on every side, so the scatter, smear and ghost have room to spread. */
+.spray {
+  position: absolute;
+  inset: -0.6em -1.3em;
+  width: calc(100% + 2.6em);
+  height: calc(100% + 1.2em);
+  pointer-events: none;
+}
