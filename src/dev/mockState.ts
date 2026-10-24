@@ -26,7 +26,7 @@ export function mockState(search: string): TunerState | null {
     case 'flat':
       return active(centsParam ? Number(centsParam) : -6)
     case 'intune':
-      // `?mock=intune` is dead on: the screen turns green after IN_TUNE_HOLD_MS.
+      // `?mock=intune` is dead on: the screen turns moon grey after IN_TUNE_HOLD_MS.
       return active(centsParam ? Number(centsParam) : 0)
     case 'idle':
       return { status: 'idle', last: null }

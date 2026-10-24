@@ -1,0 +1,23 @@
+/*
+ * Fills the space between the tuning label and the string chips; the viewBox is the shape of a
+ * capital, so the letter grows until it meets either the top and bottom or the sides, and wide notes ("Eb") may spill sideways past it.
+ */
+.letter {
+  position: absolute;
+  inset: 96px 0 calc(96px + env(safe-area-inset-bottom));
+  width: 100%;
+  height: calc(100% - 192px - env(safe-area-inset-bottom));
+  overflow: visible;
+  fill: var(--color-letter);
+  /* Moirai One is drawn in hairlines; a stroke in the same colour keeps them through the blur. */
+  stroke: var(--color-letter);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  font-family: var(--font-letter);
+  font-weight: 400;
+  /* Darkens whatever is behind it, so it takes on the moon grey when in tune. */
+  mix-blend-mode: multiply;
+  filter: blur(calc(var(--letter-blur) * 4vmin));
+  will-change: filter;
+  user-select: none;
+}
