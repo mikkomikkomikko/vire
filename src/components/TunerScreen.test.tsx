@@ -214,10 +214,11 @@ describe('TunerScreen', () => {
     expect(locked.onLock).toHaveBeenLastCalledWith(null)
   })
 
-  test('the tuning label is a button that opens settings', async () => {
+  test('the tuning sits top left; the menu button opens settings', async () => {
     const { onOpenSettings } = renderScreen(active(12), { tuning: 'Drop D', capo: 2 })
+    expect(screen.getByText('Drop D')).toBeInTheDocument()
     expect(screen.getByText('Capo 2')).toBeInTheDocument()
-    await userEvent.click(screen.getByRole('button', { name: 'Settings: Drop D, capo 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Settings' }))
     expect(onOpenSettings).toHaveBeenCalledOnce()
   })
 
@@ -244,9 +245,10 @@ describe('TunerScreen', () => {
     expect(onStart).not.toHaveBeenCalled()
   })
 
-  test('the start screen hides the bottom bar', () => {
+  test('the start screen hides the top and bottom bars', () => {
     renderScreen({ status: 'start' })
     expect(screen.queryByRole('group', { name: 'String' })).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Settings: Standard' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Settings' })).toBeNull()
+    expect(screen.queryByText('Standard')).toBeNull()
   })
 })

@@ -1,7 +1,7 @@
 /*
  * From the Paper artboards: 7.2 px of band per cent on an 844 px tall screen. The band never
- * grows into the bottom row (40 px strings + 12 px gap + 38 px tuning + 56 px padding + 24 px
- * gap), so the string chips stay legible.
+ * grows into the bottom row (40 px strings + 56 px padding + 24 px gap), so the string chips
+ * stay legible. The same cap keeps a sharp band clear of the tuning label at the top.
  */
 .band {
   position: absolute;
@@ -9,7 +9,7 @@
   right: 0;
   height: min(
     calc(var(--band-cents) * 100dvh * 7.2 / 844),
-    calc(50dvh - 170px - env(safe-area-inset-bottom))
+    calc(50dvh - 120px - env(safe-area-inset-bottom))
   );
 }
 

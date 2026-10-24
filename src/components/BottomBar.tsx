@@ -7,21 +7,10 @@ type Props = {
   locked: string | null
   /** The string auto mode is hearing, marked on its chip. */
   detected: string | null
-  tuning: string
-  capo: number
   onLock: (name: string | null) => void
-  onOpenSettings: () => void
 }
 
-export function BottomBar({
-  strings,
-  locked,
-  detected,
-  tuning,
-  capo,
-  onLock,
-  onOpenSettings,
-}: Props) {
+export function BottomBar({ strings, locked, detected, onLock }: Props) {
   return (
     <footer className={styles.bar}>
       <fieldset className={styles.strings}>
@@ -42,16 +31,6 @@ export function BottomBar({
           </label>
         ))}
       </fieldset>
-      <button
-        type="button"
-        className={styles.settings}
-        onClick={onOpenSettings}
-        aria-label={`Settings: ${tuning}${capo > 0 ? `, capo ${capo}` : ''}`}
-      >
-        <span className={styles.tuning}>{tuning}</span>
-        {/* On its own line so a long tuning name never pushes the capo out of view. */}
-        {capo > 0 && <span className={styles.capo}>Capo {capo}</span>}
-      </button>
     </footer>
   )
 }

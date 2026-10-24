@@ -4,6 +4,7 @@ import type { TunerState } from '../state/tunerState'
 import { BottomBar } from './BottomBar'
 import { CentsDisplay } from './CentsDisplay'
 import { StartPrompt } from './StartPrompt'
+import { TopBar } from './TopBar'
 import styles from './TunerScreen.module.css'
 import { useThemeColor } from './useThemeColor'
 
@@ -60,15 +61,15 @@ export function TunerScreen({
       )}
       {/* The prompt has the screen to itself; the strings and tuning come back once it's gone. */}
       {!prompt && (
-        <BottomBar
-          strings={strings}
-          locked={locked?.name ?? null}
-          detected={reading?.string.name ?? null}
-          tuning={tuning}
-          capo={capo}
-          onLock={onLock}
-          onOpenSettings={onOpenSettings}
-        />
+        <>
+          <TopBar tuning={tuning} capo={capo} onOpenSettings={onOpenSettings} />
+          <BottomBar
+            strings={strings}
+            locked={locked?.name ?? null}
+            detected={reading?.string.name ?? null}
+            onLock={onLock}
+          />
+        </>
       )}
     </main>
   )
