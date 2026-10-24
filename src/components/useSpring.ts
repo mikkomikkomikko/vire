@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 
-const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
-
 /** Integrate in steps no longer than this, so a long frame can't make the spring blow up. */
 const STEP_S = 1 / 240
 /** A frame longer than this (a backgrounded tab) is treated as this long. */
@@ -23,7 +21,7 @@ export type SpringOptions = {
  * frame-to-frame jitter and it eases into place with a slight overshoot. Starts at `value`; with
  * reduced motion the spring is critically damped, so it settles without swinging past.
  */
-export function useSpring(value: number, { response = 0.45, damping = 0.75 }: SpringOptions = {}) {
+export function useSpring(value: number, { response = 0.45, damping = 0.85 }: SpringOptions = {}) {
   const [shown, setShown] = useState(value)
   const target = useRef(value)
   const state = useRef({ x: value, v: 0, last: -1 })
@@ -32,10 +30,12 @@ export function useSpring(value: number, { response = 0.45, damping = 0.75 }: Sp
 
   useEffect(() => {
     const omega = (2 * Math.PI) / response
-    const zeta = reducedMotion() ? 1 : damping
+    // Read on every frame, so turning the setting on takes effect without a reload.
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)')
     const s = state.current
 
     tick.current = (now: number) => {
+      const zeta = reduce?.matches ? 1 : damping
       let left = s.last < 0 ? 1 / 60 : Math.min(MAX_FRAME_S, (now - s.last) / 1000)
       s.last = now
       // Semi-implicit Euler: stable for a stiff spring at these step sizes.

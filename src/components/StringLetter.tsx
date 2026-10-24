@@ -2,7 +2,9 @@ import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from
 import styles from './StringLetter.module.css'
 
 /** How long one letter takes to melt into the next. */
-export const MORPH_MS = 700
+export const MORPH_MS = 450
+/** Under reduced motion the letters cross-fade instead, without melting. */
+export const FADE_MS = 200
 
 const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false
 
@@ -70,7 +72,7 @@ type Props = {
  * cross-fading.
  */
 export function StringLetter({ note, blur }: Props) {
-  const [morph, setMorph] = useState({ from: note, to: note, t: 1 })
+  const [morph, setMorph] = useState({ from: note, to: note, t: 1, melts: true })
   const current = useRef(morph)
   useEffect(() => {
     current.current = morph
@@ -79,14 +81,18 @@ export function StringLetter({ note, blur }: Props) {
   useEffect(() => {
     const { from, to, t } = current.current
     if (note === to) return
-    // Interrupted mid-melt: start from whichever letter has the upper hand.
+    // Interrupted mid-melt: carry on from whichever letter has the upper hand, as strong and as
+    // molten as it is now, so the new letter takes the fading one's place rather than everything
+    // snapping back sharp and melting again.
     const start = t < 0.5 ? from : to
-    const duration = reducedMotion() ? 0 : MORPH_MS
+    const resume = Math.min(t, 1 - t)
+    const melts = !reducedMotion()
+    const duration = melts ? MORPH_MS : FADE_MS
     let begun = -1
     let frame = requestAnimationFrame(function step(now) {
       if (begun < 0) begun = now
-      const t = duration ? Math.min(1, (now - begun) / duration) : 1
-      setMorph({ from: start, to: note, t })
+      const t = Math.min(1, resume + (now - begun) / duration)
+      setMorph({ from: start, to: note, t, melts })
       if (t < 1) frame = requestAnimationFrame(step)
     })
     return () => cancelAnimationFrame(frame)
@@ -94,7 +100,7 @@ export function StringLetter({ note, blur }: Props) {
 
   const eased = morph.t * morph.t * (3 - 2 * morph.t)
   // How molten it is: 0 at either end, so at rest the filter passes the letter through untouched.
-  const melt = Math.sin(Math.PI * morph.t)
+  const melt = morph.melts ? Math.sin(Math.PI * morph.t) : 0
 
   return (
     <svg

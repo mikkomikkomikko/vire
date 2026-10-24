@@ -18,14 +18,16 @@
   font-family: var(--font-ui);
   overflow: hidden;
   translate: 0 100%;
+  /* Closing is a dismissal, so it goes quicker than opening. */
   transition:
-    translate 280ms var(--sheet-ease),
-    overlay 280ms allow-discrete,
-    display 280ms allow-discrete;
+    translate 200ms var(--sheet-ease),
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
 }
 
 .sheet[open] {
   translate: 0 0;
+  transition-duration: 280ms;
 }
 
 @starting-style {
@@ -38,13 +40,14 @@
   background: rgb(34 32 25 / 0.28);
   opacity: 0;
   transition:
-    opacity 280ms ease-out,
-    overlay 280ms allow-discrete,
-    display 280ms allow-discrete;
+    opacity 200ms ease-out,
+    overlay 200ms allow-discrete,
+    display 200ms allow-discrete;
 }
 
 .sheet[open]::backdrop {
   opacity: 1;
+  transition-duration: 280ms;
 }
 
 @starting-style {
@@ -280,10 +283,30 @@
   }
 }
 
+/* Fades in place instead of sliding; the backdrop and colour changes keep their fades. */
 @media (prefers-reduced-motion: reduce) {
   .sheet,
-  .sheet::backdrop,
-  .segment {
-    transition: none;
+  .sheet[open] {
+    translate: none;
+  }
+
+  .sheet {
+    opacity: 0;
+    transition:
+      opacity 200ms ease-out,
+      overlay 200ms allow-discrete,
+      display 200ms allow-discrete;
+  }
+
+  .sheet[open] {
+    opacity: 1;
+    transition-duration: 200ms;
+  }
+
+  @starting-style {
+    .sheet[open] {
+      translate: none;
+      opacity: 0;
+    }
   }
 }

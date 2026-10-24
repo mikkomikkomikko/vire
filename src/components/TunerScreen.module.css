@@ -9,8 +9,12 @@
   background: var(--color-bg);
   /* The number is difference-blended with this, so it shows black on the paper, not navy. */
   --cents-ink: var(--color-bg);
-  /* A slow fade, so turning grey reads as arriving rather than a flash; it fades back the same. */
-  transition: background-color 600ms ease-in-out;
+  /*
+   * Leaving moon grey is a warning, so it goes quickly. The number's ink uses the same fade, so it
+   * keeps matching the background.
+   */
+  --tint-fade: 200ms var(--ease-out);
+  transition: background-color var(--tint-fade);
 }
 
 /*
@@ -31,6 +35,8 @@
 }
 
 .inTune {
+  /* A slow fade in, so turning grey reads as arriving rather than a flash. */
+  --tint-fade: 600ms ease-in-out;
   background: var(--color-bg-in-tune);
   /* Black digits on the moon grey too. */
   --cents-ink: var(--color-bg-in-tune);
@@ -40,10 +46,4 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .screen {
-    transition: none;
-  }
 }
