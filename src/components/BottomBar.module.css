@@ -1,81 +1,80 @@
 .bar {
   position: relative;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
   width: 100%;
   max-width: 390px;
   margin: 0 auto;
   padding: 0 24px max(56px, calc(env(safe-area-inset-bottom) + 24px));
 }
 
-.reading {
-  flex-shrink: 0;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  transition: opacity 120ms ease-out;
-}
-
-.dimmed {
-  opacity: 0.4;
-}
-
-.note {
-  color: var(--color-ink);
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 44px;
-}
-
-.secondary {
-  color: var(--color-ink-muted);
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 20px;
-}
-
-.lock {
-  align-self: center;
-  width: 16px;
-  height: 16px;
-  margin-left: -4px;
-  fill: none;
-  stroke: var(--color-ink-muted);
-  stroke-width: 1.5;
-}
-
-.settings {
-  flex: 1;
+/* Equal columns on one row, so a six-string tuning plus Auto fits across a phone. */
+.strings {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 4px;
+  width: 100%;
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  margin: -12px -12px -12px 0;
-  padding: 12px;
+  margin: 0;
+  padding: 0;
   border: 0;
-  background: none;
-  font-family: inherit;
-  text-align: right;
+}
+
+.legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Native radios stay in the DOM for keyboard and screen readers; labels carry the visuals. */
+.radio {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  pointer-events: none;
+}
+
+.chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: rgb(14 26 21 / 0.06);
+  color: var(--color-ink);
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 160ms ease-out,
+    color 160ms ease-out,
+    box-shadow 160ms ease-out;
 }
 
-.tuning,
-.capo {
-  max-width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+/* In auto, the string being heard gets a ring; the filled chip is always the chosen mode. */
+.detected {
+  box-shadow: inset 0 0 0 1.5px var(--color-ink);
 }
 
-.capo {
-  font-size: 14px;
-  line-height: 18px;
+.chip:has(:checked) {
+  background: var(--color-ink);
+  color: #ffffff;
 }
 
-.settings:focus-visible {
+.chip:has(:focus-visible) {
   outline: 2px solid var(--color-ink);
-  outline-offset: -4px;
-  border-radius: 8px;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip {
+    transition: none;
+  }
 }

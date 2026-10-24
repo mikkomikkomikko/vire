@@ -232,36 +232,6 @@
   clear: both;
 }
 
-/* Equal columns so a six-string tuning plus Auto fits on one row of a phone. */
-.chips {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
-  gap: 4px;
-}
-
-.chip {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40px;
-  padding: 0 4px;
-  border-radius: 999px;
-  background: var(--sheet-fill);
-  color: var(--color-ink);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background-color 160ms ease-out,
-    color 160ms ease-out;
-}
-
-.chip:has(:checked) {
-  background: var(--color-ink);
-  color: #ffffff;
-}
-
 .stepper {
   display: grid;
   grid-template-columns: 48px 1fr 48px;
@@ -297,7 +267,6 @@
 
 .segment:has(:focus-visible),
 .row:has(:focus-visible),
-.chip:has(:focus-visible),
 .step:focus-visible,
 .done:focus-visible {
   outline: 2px solid var(--color-ink);
@@ -314,8 +283,7 @@
 @media (prefers-reduced-motion: reduce) {
   .sheet,
   .sheet::backdrop,
-  .segment,
-  .chip {
+  .segment {
     transition: none;
   }
 }

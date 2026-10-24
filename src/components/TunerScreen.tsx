@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { soundingFreq } from '../music/target'
 import type { TuningString } from '../music/tunings'
 import type { TunerState } from '../state/tunerState'
 import { BottomBar } from './BottomBar'
 import { CentsDisplay } from './CentsDisplay'
 import { StartPrompt } from './StartPrompt'
+import { TopBar } from './TopBar'
 import styles from './TunerScreen.module.css'
 import { useThemeColor } from './useThemeColor'
 
@@ -14,9 +14,11 @@ const BG_IN_TUNE = '#B0E1CA'
 
 type Props = {
   state: TunerState
+  strings: readonly TuningString[]
   locked: TuningString | null
   tuning: string
   capo: number
+  onLock: (name: string | null) => void
   onStart: () => void
   onOpenSettings: () => void
   onOpenPrivacy: () => void
@@ -24,9 +26,11 @@ type Props = {
 
 export function TunerScreen({
   state,
+  strings,
   locked,
   tuning,
   capo,
+  onLock,
   onStart,
   onOpenSettings,
   onOpenPrivacy,
@@ -36,10 +40,6 @@ export function TunerScreen({
   // Set by the number once it has shown 0 for a couple of seconds.
   const [inTune, setInTune] = useState(false)
   const green = !!reading && inTune
-  // A locked string is always the target, so show it even before anything is played.
-  const target = reading?.string ?? locked
-  // The pitch to tune to (capo included); the measured pitch is already shown as cents.
-  const targetFreq = target ? soundingFreq(target, capo) : null
   useThemeColor(green ? BG_IN_TUNE : BG)
   const prompt = state.status === 'start' || state.status === 'denied'
 
@@ -59,17 +59,17 @@ export function TunerScreen({
       {state.status === 'denied' && (
         <StartPrompt reason="denied" onStart={onStart} onPrivacy={onOpenPrivacy} />
       )}
-      {/* The prompt has the screen to itself; the note and tuning come back once it's gone. */}
+      {/* The prompt has the screen to itself; the strings and tuning come back once it's gone. */}
       {!prompt && (
-        <BottomBar
-          note={target?.name ?? null}
-          freq={targetFreq}
-          locked={locked !== null}
-          tuning={tuning}
-          capo={capo}
-          dimmed={!reading}
-          onOpenSettings={onOpenSettings}
-        />
+        <>
+          <TopBar tuning={tuning} capo={capo} onOpenSettings={onOpenSettings} />
+          <BottomBar
+            strings={strings}
+            locked={locked?.name ?? null}
+            detected={reading?.string.name ?? null}
+            onLock={onLock}
+          />
+        </>
       )}
     </main>
   )

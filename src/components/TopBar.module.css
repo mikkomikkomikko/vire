@@ -1,0 +1,72 @@
+.bar {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  padding: max(24px, calc(env(safe-area-inset-top) + 12px)) 24px 0;
+}
+
+.tuning {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.name,
+.capo {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.capo {
+  font-size: 14px;
+  line-height: 18px;
+}
+
+/* A 44 px target whose glyph lines up with the right edge of the chips below. */
+.menu {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: -12px -10px 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  color: var(--color-ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.menu:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: -2px;
+}
+
+@media (hover: hover) {
+  .menu:hover {
+    background: rgb(14 26 21 / 0.06);
+  }
+}
