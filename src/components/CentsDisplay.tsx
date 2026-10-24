@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './CentsDisplay.module.css'
 import { formatCents, MAX_BLUR_CENTS, MAX_DISPLAY_CENTS } from './formatCents'
+import { SprayNumber } from './SprayNumber'
 import { StringLetter } from './StringLetter'
 import { useHeld } from './useHeld'
 import { useSpring } from './useSpring'
@@ -25,23 +26,36 @@ export function CentsDisplay({ cents, note, onInTune }: Props) {
   const direction = shown > 0 ? 'sharp' : 'flat'
   const label = value === '0' ? '0 cents' : `${sign}${value} cents ${direction}`
   // Sharp the moment the number reads 0, not a leftover fraction of a cent later. The square
-  // root makes the first few cents off already look clearly soft.
+  // root makes the first few cents off already look clearly soft. The letter's blur and the
+  // number's spray both follow it.
   const blur =
     value === '0' ? 0 : Math.sqrt(Math.min(MAX_BLUR_CENTS, Math.abs(shown)) / MAX_BLUR_CENTS)
   // In tune follows the number you see, not the raw reading, so it never disagrees with it.
   const inTune = useHeld(value === '0', IN_TUNE_HOLD_MS)
   useEffect(() => onInTune(inTune), [inTune, onInTune])
   useEffect(() => () => onInTune(false), [onInTune])
+  // Until the shader is drawing (or without WebGL), the plain digits show.
+  const [sprayed, setSprayed] = useState(false)
+
+  const amount = Math.round(blur * 1000) / 1000
+  // In tune, the number steps aside and leaves the sharp letter on its own; the label still says 0.
+  const zero = value === '0'
 
   return (
     <>
-      <StringLetter note={note} blur={Math.round(blur * 1000) / 1000} />
+      <StringLetter note={note} blur={amount} direction={shown > 0 ? 1 : -1} />
       {/* Monospaced, so the number doesn't shift as it counts or flips sign. */}
       <div className={styles.number} aria-label={label}>
-        <span aria-hidden>
+        <span aria-hidden className={sprayed || zero ? styles.under : undefined}>
           {sign}
           {value}
         </span>
+        <SprayNumber
+          text={zero ? '' : sign + value}
+          amount={amount}
+          direction={shown > 0 ? 1 : -1}
+          onReady={setSprayed}
+        />
       </div>
     </>
   )
